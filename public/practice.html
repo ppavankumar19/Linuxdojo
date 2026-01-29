@@ -1,0 +1,709 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Practice • LinuxDojo</title>
+  <script src="/config.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg-primary: linear-gradient(145deg, #050810 0%, #0f1419 30%, #1a0f2e 60%, #0d1b2a 100%);
+      --bg-secondary: rgba(20, 28, 50, 0.45);
+      --bg-tertiary: rgba(35, 48, 70, 0.25);
+      --text-primary: #f8fafc;
+      --text-secondary: #d4d8e0;
+      --text-tertiary: #8b95a8;
+      --accent-primary: #00e5ff;
+      --accent-secondary: #0fb0ff;
+      --accent-tertiary: #6366f1;
+      --accent-success: #10b981;
+      --accent-warning: #f59e0b;
+      --accent-error: #ef4444;
+      --border-color: rgba(80, 95, 120, 0.18);
+      --border-light: rgba(148, 163, 184, 0.08);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg-primary);
+      background-attachment: fixed;
+      color: var(--text-primary);
+      font-size: 14px;
+      line-height: 1.65;
+      letter-spacing: 0.4px;
+      font-weight: 400;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    /* Navigation */
+    .nav {
+      position: sticky;
+      top: 0;
+      backdrop-filter: blur(14px);
+      background: rgba(5, 8, 16, 0.65);
+      border-bottom: 1px solid rgba(0, 229, 255, 0.06);
+      z-index: 10;
+    }
+
+    .navin {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 16px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand {
+      font-weight: 950;
+      letter-spacing: 1.2px;
+      font-size: 19px;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 50%, var(--accent-tertiary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 32px 18px;
+    }
+
+    /* Grid & Cards */
+    .grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(12, 1fr);
+    }
+
+    .card {
+      border: 1.2px solid var(--border-color);
+      border-radius: 16px;
+      background: rgba(20, 28, 50, 0.45);
+      backdrop-filter: blur(5px);
+      padding: 24px;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .card:hover {
+      background: rgba(30, 41, 59, 0.55);
+      border-color: rgba(0, 229, 255, 0.12);
+    }
+
+    .left {
+      grid-column: span 12;
+    }
+
+    .right {
+      grid-column: span 12;
+    }
+
+    @media(min-width: 900px) {
+      .left {
+        grid-column: span 5;
+      }
+      .right {
+        grid-column: span 7;
+      }
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 11px 18px;
+      border-radius: 10px;
+      border: 1.2px solid var(--border-color);
+      background: rgba(25, 35, 55, 0.5);
+      color: var(--text-primary);
+      cursor: pointer;
+      font-weight: 550;
+      font-size: 13px;
+      letter-spacing: 0.3px;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      font-family: 'Inter', sans-serif;
+    }
+
+    .btn:hover:not(:disabled) {
+      background: rgba(40, 55, 80, 0.65);
+      border-color: var(--accent-secondary);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(15, 176, 255, 0.1);
+    }
+
+    .btn.primary {
+      background: linear-gradient(135deg, var(--accent-success) 0%, #0d9668 100%);
+      color: #071018;
+      border-color: transparent;
+      font-weight: 700;
+    }
+
+    .btn.primary:hover:not(:disabled) {
+      background: linear-gradient(135deg, #13d48f 0%, #10b981 100%);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+      transform: translateY(-2px);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Typography */
+    .small {
+      color: var(--text-tertiary);
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: 0.35px;
+      opacity: 0.95;
+    }
+
+    .mono {
+      font-family: 'Geist Mono', monospace;
+      font-weight: 500;
+    }
+
+    /* Meta Section */
+    #meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(99, 102, 241, 0.08);
+      border: 1px solid rgba(99, 102, 241, 0.15);
+    }
+
+    #meta b {
+      color: var(--text-primary);
+      font-weight: 700;
+    }
+
+    /* Controls */
+    .controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 16px;
+    }
+
+    /* Pills/Badges */
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      font-size: 12px;
+      font-weight: 550;
+      font-family: 'Geist Mono', monospace;
+      color: var(--text-secondary);
+      background: rgba(25, 35, 55, 0.5);
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+    }
+
+    /* Steps Container */
+    #steps {
+      display: grid;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .step {
+      padding: 12px 14px;
+      border: 1.2px solid var(--border-color);
+      border-radius: 12px;
+      background: rgba(20, 28, 50, 0.4);
+      color: var(--text-secondary);
+      font-family: 'Geist Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 0.3px;
+      transition: all 0.3s ease;
+      word-break: break-word;
+    }
+
+    .step.active {
+      border-color: var(--accent-success);
+      background: rgba(16, 185, 129, 0.12);
+      color: var(--accent-success);
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+    }
+
+    /* Textarea */
+    textarea {
+      width: 100%;
+      min-height: 220px;
+      border-radius: 14px;
+      border: 1.2px solid var(--border-color);
+      background: rgba(10, 14, 39, 0.6);
+      color: var(--text-primary);
+      padding: 16px 18px;
+      font-family: 'Geist Mono', monospace;
+      font-size: 13px;
+      letter-spacing: 0.3px;
+      outline: none;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      resize: vertical;
+      backdrop-filter: blur(2px);
+    }
+
+    textarea::placeholder {
+      color: var(--text-tertiary);
+      opacity: 0.6;
+    }
+
+    textarea:focus {
+      border-color: var(--accent-primary);
+      background: rgba(10, 14, 39, 0.8);
+      box-shadow: 0 0 0 4px rgba(0, 229, 255, 0.12), inset 0 0 0 1px rgba(0, 229, 255, 0.08);
+    }
+
+    /* Messages */
+    #msg,
+    #hint {
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: rgba(99, 102, 241, 0.08);
+      border: 1px solid rgba(99, 102, 241, 0.15);
+      color: var(--accent-tertiary);
+      margin-top: 12px;
+      letter-spacing: 0.3px;
+      font-weight: 500;
+    }
+
+    #msg:empty,
+    #hint:empty {
+      display: none;
+    }
+
+    /* Message States */
+    .ok {
+      color: var(--accent-success);
+    }
+
+    .warn {
+      color: var(--accent-warning);
+    }
+
+    .error {
+      color: var(--accent-error);
+    }
+
+    /* Header */
+    .practice-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+
+    .practice-header-left {
+      flex: 1;
+    }
+
+    .practice-header-right {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .card {
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(71, 85, 105, 0.4);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(71, 85, 105, 0.6);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        padding: 24px 14px;
+      }
+
+      .controls {
+        flex-direction: column;
+      }
+
+      .controls > * {
+        width: 100%;
+      }
+
+      .practice-header {
+        flex-direction: column;
+      }
+
+      .practice-header-right {
+        width: 100%;
+        flex-direction: column;
+      }
+
+      .practice-header-right > * {
+        width: 100%;
+      }
+
+      textarea {
+        min-height: 180px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="navMount"></div>
+
+  <div class="container">
+    <div class="grid" style="margin-top: 16px;">
+      <!-- Left Panel: Steps & Progress -->
+      <div class="card left">
+        <div id="meta" class="small">Loading command...</div>
+
+        <div class="controls">
+          <span class="pill" id="progressPill">Step 0/0</span>
+          <span class="pill" id="dbPill">DB: —</span>
+          <button class="btn primary" id="btnNext">Next Step</button>
+          <button class="btn" id="btnResetSteps">Reset Steps</button>
+        </div>
+
+        <div id="steps"></div>
+      </div>
+
+      <!-- Right Panel: Practice Terminal -->
+      <div class="card right">
+        <div class="practice-header">
+          <div class="practice-header-left">
+            <div class="mono" style="font-weight: 700; font-size: 14px;">$ Practice Terminal</div>
+            <div class="small">Type the command shown in your step. Last line is checked.</div>
+          </div>
+          <div class="practice-header-right">
+            <button id="btnClear" class="btn">Clear</button>
+            <button id="btnCheck" class="btn primary">Check</button>
+          </div>
+        </div>
+
+        <textarea id="term" placeholder="Type your command here:&#10;&#10;pwd&#10;ls&#10;cd .."></textarea>
+
+        <div id="msg"></div>
+        <div id="hint"></div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { getSupabase, getSessionAndRole, renderNav, escapeHtml } from "/js/app.js";
+
+    const supabase = getSupabase();
+
+    const navMount = document.getElementById("navMount");
+    const qs = new URLSearchParams(location.search);
+    const slug = qs.get("slug");
+
+    const meta = document.getElementById("meta");
+    const stepsBox = document.getElementById("steps");
+    const term = document.getElementById("term");
+    const msg = document.getElementById("msg");
+    const hint = document.getElementById("hint");
+    const pill = document.getElementById("progressPill");
+    const dbPill = document.getElementById("dbPill");
+
+    const btnClear = document.getElementById("btnClear");
+    const btnCheck = document.getElementById("btnCheck");
+    const btnNext = document.getElementById("btnNext");
+    const btnResetSteps = document.getElementById("btnResetSteps");
+
+    let steps = [];
+    let idx = 0;
+    let title = null;
+    let syntax = null;
+
+    let state = { user: null, email: null, role: null };
+
+    function storageKey() {
+      return slug ? `linuxdojo:stepIndex:${slug}` : `linuxdojo:stepIndex:free`;
+    }
+
+    function normalizeLine(s) {
+      return String(s || "").trim().replace(/\s+/g, " ");
+    }
+
+    function updateUI() {
+      const total = steps.length;
+      pill.textContent = `Step ${Math.min(idx + 1, total)}/${total || 0}`;
+
+      if (!slug) {
+        meta.innerHTML = `<b>Free Practice Mode</b> • Open a command and click Practice to load guided steps.`;
+        stepsBox.innerHTML = `<div class="step small">No command selected.</div>`;
+        btnNext.disabled = true;
+        btnResetSteps.disabled = true;
+        dbPill.textContent = `DB: —`;
+        return;
+      }
+
+      meta.innerHTML = `<b>${escapeHtml(title || slug)}</b> • <span class="mono">${escapeHtml(syntax || "")}</span>`;
+
+      if (!steps.length) {
+        stepsBox.innerHTML = `<div class="step small">No lesson steps added yet. Practice freely.</div>`;
+        btnNext.disabled = true;
+        btnResetSteps.disabled = true;
+        return;
+      }
+
+      stepsBox.innerHTML = steps
+        .map(
+          (s, i) => `
+        <div class="step ${i === idx ? "active" : ""}">
+          ${i + 1}. ${escapeHtml(s)}
+        </div>
+      `
+        )
+        .join("");
+
+      btnNext.disabled = idx >= steps.length - 1;
+      btnResetSteps.disabled = false;
+    }
+
+    function getCurrentStep() {
+      if (!steps.length) return null;
+      return steps[idx] || null;
+    }
+
+    function loadSavedIndex() {
+      const raw = localStorage.getItem(storageKey());
+      const n = Number(raw);
+      if (Number.isFinite(n) && n >= 0) idx = n;
+    }
+
+    function saveLocalIndex() {
+      localStorage.setItem(storageKey(), String(idx));
+    }
+
+    async function upsertProgress(partial) {
+      if (!state.user || !slug) return;
+
+      const payload = {
+        user_id: state.user.id,
+        command_slug: slug,
+        ...partial
+      };
+
+      const { error } = await supabase
+        .from("progress")
+        .upsert(payload, { onConflict: "user_id,command_slug" });
+
+      if (error) {
+        dbPill.innerHTML = `DB: <span class="warn">save failed</span>`;
+        console.error(error);
+      } else {
+        dbPill.innerHTML = `DB: <span class="ok">saved</span>`;
+      }
+    }
+
+    async function loadProgressFromDB() {
+      if (!state.user || !slug) {
+        dbPill.textContent = `DB: —`;
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("progress")
+        .select("step_index,is_completed,completed_at")
+        .eq("user_id", state.user.id)
+        .eq("command_slug", slug)
+        .maybeSingle();
+
+      if (error) {
+        dbPill.innerHTML = `DB: <span class="warn">error</span>`;
+        return;
+      }
+
+      if (!data) {
+        dbPill.innerHTML = `DB: <span class="small">new</span>`;
+        return;
+      }
+
+      if (Number.isFinite(data.step_index) && data.step_index >= 0) {
+        idx = Math.min(data.step_index, Math.max(steps.length - 1, 0));
+        saveLocalIndex();
+      }
+
+      if (data.is_completed) {
+        dbPill.innerHTML = `DB: <span class="ok">completed</span>`;
+      } else {
+        dbPill.innerHTML = `DB: <span class="ok">synced</span>`;
+      }
+    }
+
+    function resetIndex() {
+      idx = 0;
+      saveLocalIndex();
+      updateUI();
+      msg.textContent = "✅ Reset to step 1.";
+      hint.textContent = "";
+      upsertProgress({ step_index: 0, is_completed: false, completed_at: null });
+    }
+
+    function checkTyped() {
+      msg.textContent = "";
+      hint.textContent = "";
+
+      const cur = getCurrentStep();
+      if (!cur) {
+        msg.textContent = "No guided step loaded. Practice freely.";
+        return;
+      }
+
+      const typed = normalizeLine(
+        term.value
+          .split("\n")
+          .filter(Boolean)
+          .slice(-1)[0] || ""
+      );
+      const expected = normalizeLine(cur);
+
+      if (!typed) {
+        msg.textContent = "Type a command first (last line is checked).";
+        hint.innerHTML = `Try: <span class="mono">${escapeHtml(expected)}</span>`;
+        return;
+      }
+
+      const ok =
+        typed === expected ||
+        typed.startsWith(expected + " ") ||
+        typed.startsWith(expected);
+
+      if (ok) {
+        msg.innerHTML = `✅ Correct! <span class="mono">${escapeHtml(expected)}</span>`;
+
+        if (idx < steps.length - 1) {
+          idx += 1;
+          saveLocalIndex();
+          updateUI();
+          upsertProgress({ step_index: idx, is_completed: false, completed_at: null });
+        } else {
+          msg.innerHTML = `🎉 <span class="ok">All steps completed! Progress saved.</span>`;
+          upsertProgress({ step_index: idx, is_completed: true, completed_at: new Date().toISOString() });
+        }
+      } else {
+        msg.innerHTML = `❌ Mismatch. Expected: <span class="mono">${escapeHtml(expected)}</span>`;
+        hint.innerHTML = `You typed: <span class="mono">${escapeHtml(typed)}</span>`;
+      }
+    }
+
+    btnClear.addEventListener("click", () => (term.value = ""));
+    btnCheck.addEventListener("click", checkTyped);
+
+    btnNext.addEventListener("click", () => {
+      if (idx < steps.length - 1) {
+        idx += 1;
+        saveLocalIndex();
+        updateUI();
+        msg.textContent = "→ Moved to next step.";
+        hint.textContent = "";
+        upsertProgress({ step_index: idx, is_completed: false, completed_at: null });
+      }
+    });
+
+    btnResetSteps.addEventListener("click", resetIndex);
+
+    async function load() {
+      state = await getSessionAndRole(supabase);
+      renderNav(navMount, state);
+
+      const logoutBtn = document.getElementById("navLogout");
+      if (logoutBtn) {
+        logoutBtn.addEventListener("click", async () => {
+          await supabase.auth.signOut();
+          location.reload();
+        });
+      }
+
+      if (!slug) {
+        updateUI();
+        dbPill.textContent = `DB: —`;
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("commands")
+        .select("title,syntax,lesson_steps,slug")
+        .eq("slug", slug)
+        .single();
+
+      if (error) {
+        meta.textContent = "Error: " + error.message;
+        return;
+      }
+
+      title = data.title;
+      syntax = data.syntax;
+      steps = data.lesson_steps || [];
+
+      loadSavedIndex();
+      if (idx >= steps.length) idx = 0;
+
+      updateUI();
+      await loadProgressFromDB();
+      updateUI();
+
+      if (state.user && slug) {
+        await upsertProgress({ step_index: idx });
+      }
+    }
+
+    load();
+  </script>
+</body>
+</html>

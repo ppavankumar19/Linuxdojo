@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>My Progress • LinuxDojo</title>
+  <script src="/config.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg-primary: linear-gradient(145deg, #050810 0%, #0f1419 30%, #1a0f2e 60%, #0d1b2a 100%);
+      --bg-secondary: rgba(20, 28, 50, 0.45);
+      --bg-tertiary: rgba(35, 48, 70, 0.25);
+      --text-primary: #f8fafc;
+      --text-secondary: #d4d8e0;
+      --text-tertiary: #8b95a8;
+      --accent-primary: #00e5ff;
+      --accent-secondary: #0fb0ff;
+      --accent-tertiary: #6366f1;
+      --accent-success: #10b981;
+      --accent-warn: #f59e0b;
+      --border-color: rgba(80, 95, 120, 0.18);
+      --border-light: rgba(148, 163, 184, 0.08);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg-primary);
+      background-attachment: fixed;
+      color: var(--text-primary);
+      font-size: 14px;
+      line-height: 1.65;
+      letter-spacing: 0.4px;
+      font-weight: 400;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 11px 18px;
+      border-radius: 10px;
+      border: 1.2px solid var(--border-color);
+      background: rgba(25, 35, 55, 0.5);
+      color: var(--text-primary);
+      cursor: pointer;
+      font-weight: 550;
+      font-size: 13px;
+      letter-spacing: 0.3px;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      font-family: 'Inter', sans-serif;
+    }
+
+    .btn:hover {
+      background: rgba(40, 55, 80, 0.65);
+      border-color: var(--accent-secondary);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(15, 176, 255, 0.1);
+    }
+
+    .btn.primary {
+      background: linear-gradient(135deg, var(--accent-success) 0%, #0d9668 100%);
+      color: #071018;
+      border-color: transparent;
+      font-weight: 700;
+    }
+
+    .btn.primary:hover {
+      background: linear-gradient(135deg, #13d48f 0%, #10b981 100%);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+      transform: translateY(-2px);
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 32px 18px;
+    }
+
+    h1 {
+      margin: 10px 0 6px;
+      font-size: 34px;
+      font-weight: 900;
+      line-height: 1.15;
+      letter-spacing: -0.6px;
+      background: linear-gradient(135deg, #ffffff 0%, var(--text-secondary) 40%, var(--accent-primary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .small {
+      color: var(--text-tertiary);
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: 0.35px;
+      opacity: 0.95;
+    }
+
+    .grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(12, 1fr);
+      margin-top: 18px;
+    }
+
+    .card {
+      grid-column: span 12;
+      border: 1.2px solid var(--border-color);
+      border-radius: 16px;
+      background: var(--bg-secondary);
+      backdrop-filter: blur(5px);
+      padding: 22px;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .card:hover {
+      background: rgba(30, 41, 59, 0.55);
+      border-color: rgba(0, 229, 255, 0.12);
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.5);
+    }
+
+    @media(min-width:900px){
+      .half{grid-column:span 6}
+    }
+
+    .item {
+      padding: 14px;
+      border: 1.2px solid var(--border-color);
+      border-radius: 14px;
+      background: rgba(15, 23, 42, 0.6);
+      margin-top: 10px;
+      transition: all 0.3s ease;
+    }
+
+    .item:hover {
+      border-color: var(--accent-primary);
+      background: rgba(30, 41, 59, 0.75);
+      transform: translateY(-1px);
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .title {
+      font-weight: 750;
+      font-size: 15px;
+      color: var(--text-primary);
+      letter-spacing: -0.1px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border-color);
+      font-size: 11px;
+      color: var(--text-tertiary);
+      font-weight: 550;
+      font-family: 'Geist Mono', monospace;
+      background: rgba(25, 35, 55, 0.5);
+      letter-spacing: 0.35px;
+      backdrop-filter: blur(1px);
+    }
+
+    .badge.ok {
+      border-color: var(--accent-success);
+      color: var(--accent-success);
+      background: rgba(16, 185, 129, 0.1);
+    }
+
+    .badge.warn {
+      border-color: var(--accent-warn);
+      color: var(--accent-warn);
+      background: rgba(245, 158, 11, 0.08);
+    }
+
+    .mono {
+      font-family: 'Geist Mono', ui-monospace, Menlo, Monaco, Consolas, monospace;
+    }
+
+    /* Animation */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .card {
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(71, 85, 105, 0.4);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(71, 85, 105, 0.6);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        padding: 24px 14px;
+      }
+
+      h1 {
+        font-size: 26px;
+        margin-bottom: 8px;
+      }
+
+      .card {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="navMount"></div>
+
+  <div class="container">
+    <h1>My Progress</h1>
+    <div class="small">Track what you’ve completed and resume what you started.</div>
+
+    <div id="gate" class="card" style="margin-top:14px;">
+      <div class="small">Loading session...</div>
+    </div>
+
+    <div id="content" class="grid" style="display:none;">
+      <div class="card half">
+        <div class="row">
+          <div>
+            <div class="title">✅ Completed</div>
+            <div class="small">Commands you finished.</div>
+          </div>
+          <span class="badge ok" id="completedCount">0</span>
+        </div>
+        <div id="completedList"></div>
+      </div>
+
+      <div class="card half">
+        <div class="row">
+          <div>
+            <div class="title">🟡 In Progress</div>
+            <div class="small">Continue where you left off.</div>
+          </div>
+          <span class="badge warn" id="progressCount">0</span>
+        </div>
+        <div id="progressList"></div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { getSupabase, getSessionAndRole, renderNav, escapeHtml } from "/js/app.js";
+
+    const supabase = getSupabase();
+
+    const navMount = document.getElementById("navMount");
+    const gate = document.getElementById("gate");
+    const content = document.getElementById("content");
+
+    const completedCount = document.getElementById("completedCount");
+    const progressCount = document.getElementById("progressCount");
+    const completedList = document.getElementById("completedList");
+    const progressList = document.getElementById("progressList");
+
+    function itemHTML(row, statusBadgeHtml) {
+      return `
+        <div class="item">
+          <div class="row">
+            <div>
+              <div class="title">
+                ${escapeHtml(row.title || row.command_slug)}
+                ${statusBadgeHtml}
+              </div>
+              <div class="small" style="margin-top:6px;">
+                ${row.syntax ? `<span class="badge mono">${escapeHtml(row.syntax)}</span>` : ``}
+                <span class="badge mono">/${escapeHtml(row.command_slug)}</span>
+              </div>
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+              <a class="btn" href="/command.html?slug=${encodeURIComponent(row.command_slug)}">Open</a>
+              <a class="btn primary" href="/practice.html?slug=${encodeURIComponent(row.command_slug)}">Practice</a>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    async function load() {
+      const state = await getSessionAndRole(supabase);
+      renderNav(navMount, state);
+
+      const logoutBtn = document.getElementById("navLogout");
+      if (logoutBtn) {
+        logoutBtn.addEventListener("click", async () => {
+          await supabase.auth.signOut();
+          location.href = "/login.html";
+        });
+      }
+
+      if (!state.user) {
+        gate.innerHTML = `
+          <div class="title">You are not logged in</div>
+          <div class="small" style="margin-top:6px;">Login to see your progress.</div>
+          <div style="margin-top:12px;">
+            <a class="btn primary" href="/login.html">Login</a>
+          </div>
+        `;
+        return;
+      }
+
+      const { data: prog, error: progErr } = await supabase
+        .from("progress")
+        .select("command_slug, step_index, is_completed, completed_at, updated_at")
+        .eq("user_id", state.user.id)
+        .order("updated_at", { ascending: false });
+
+      if (progErr) {
+        gate.innerHTML = `<div class="small">Error loading progress: ${escapeHtml(progErr.message)}</div>`;
+        return;
+      }
+
+      const slugs = (prog || []).map(p => p.command_slug);
+      const map = new Map();
+
+      if (slugs.length) {
+        const { data: cmds } = await supabase
+          .from("commands")
+          .select("slug,title,syntax")
+          .in("slug", slugs);
+
+        (cmds || []).forEach(c => map.set(c.slug, { title: c.title, syntax: c.syntax }));
+      }
+
+      const rows = (prog || []).map(p => ({
+        command_slug: p.command_slug,
+        step_index: p.step_index,
+        is_completed: p.is_completed,
+        completed_at: p.completed_at,
+        title: map.get(p.command_slug)?.title,
+        syntax: map.get(p.command_slug)?.syntax
+      }));
+
+      const completed = rows.filter(r => r.is_completed);
+      const inProgress = rows.filter(r => !r.is_completed);
+
+      completedCount.textContent = String(completed.length);
+      progressCount.textContent = String(inProgress.length);
+
+      completedList.innerHTML = completed.length
+        ? completed.map(r => itemHTML(r, `<span class="badge ok" style="margin-left:8px;">✅ Completed</span>`)).join("")
+        : `<div class="item small">No completed commands yet.</div>`;
+
+      progressList.innerHTML = inProgress.length
+        ? inProgress.map(r => itemHTML(
+            r,
+            `<span class="badge warn" style="margin-left:8px;">Step ${r.step_index + 1}</span>`
+          )).join("")
+        : `<div class="item small">No in-progress commands yet.</div>`;
+
+      gate.style.display = "none";
+      content.style.display = "grid";
+    }
+
+    load();
+  </script>
+</body>
+</html>

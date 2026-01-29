@@ -1,0 +1,749 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin • LinuxDojo</title>
+  <script src="/config.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg-primary: linear-gradient(145deg, #050810 0%, #0f1419 30%, #1a0f2e 60%, #0d1b2a 100%);
+      --bg-secondary: rgba(20, 28, 50, 0.45);
+      --bg-tertiary: rgba(35, 48, 70, 0.25);
+      --text-primary: #f8fafc;
+      --text-secondary: #d4d8e0;
+      --text-tertiary: #8b95a8;
+      --accent-primary: #00e5ff;
+      --accent-secondary: #0fb0ff;
+      --accent-tertiary: #6366f1;
+      --accent-success: #10b981;
+      --accent-danger: #ef4444;
+      --border-color: rgba(80, 95, 120, 0.18);
+      --border-light: rgba(148, 163, 184, 0.08);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg-primary);
+      background-attachment: fixed;
+      color: var(--text-primary);
+      font-size: 14px;
+      line-height: 1.65;
+      letter-spacing: 0.4px;
+      font-weight: 400;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    /* Navigation */
+    .nav {
+      position: sticky;
+      top: 0;
+      backdrop-filter: blur(14px);
+      background: rgba(5, 8, 16, 0.65);
+      border-bottom: 1px solid rgba(0, 229, 255, 0.06);
+      z-index: 10;
+    }
+
+    .navin {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 16px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand {
+      font-weight: 950;
+      letter-spacing: 1.2px;
+      font-size: 19px;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 50%, var(--accent-tertiary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 18px;
+    }
+
+    /* Grid & Cards */
+    .grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(12, 1fr);
+    }
+
+    .card {
+      grid-column: span 12;
+      border: 1.2px solid var(--border-color);
+      border-radius: 16px;
+      background: rgba(20, 28, 50, 0.45);
+      backdrop-filter: blur(5px);
+      padding: 24px;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .card:hover {
+      background: rgba(30, 41, 59, 0.55);
+      border-color: rgba(0, 229, 255, 0.12);
+    }
+
+    @media(min-width: 900px) {
+      .card.left {
+        grid-column: span 5;
+      }
+      .card.right {
+        grid-column: span 7;
+      }
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 11px 18px;
+      border-radius: 10px;
+      border: 1.2px solid var(--border-color);
+      background: rgba(25, 35, 55, 0.5);
+      color: var(--text-primary);
+      cursor: pointer;
+      font-weight: 550;
+      font-size: 13px;
+      letter-spacing: 0.3px;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      font-family: 'Inter', sans-serif;
+    }
+
+    .btn:hover {
+      background: rgba(40, 55, 80, 0.65);
+      border-color: var(--accent-secondary);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(15, 176, 255, 0.1);
+    }
+
+    .btn.primary {
+      background: linear-gradient(135deg, var(--accent-success) 0%, #0d9668 100%);
+      color: #071018;
+      border-color: transparent;
+      font-weight: 700;
+    }
+
+    .btn.primary:hover {
+      background: linear-gradient(135deg, #13d48f 0%, #10b981 100%);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+    }
+
+    .btn.danger {
+      background: linear-gradient(135deg, var(--accent-danger) 0%, #dc2626 100%);
+      color: #0b1220;
+      border-color: transparent;
+      font-weight: 700;
+    }
+
+    .btn.danger:hover {
+      background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+    }
+
+    /* Typography */
+    .small {
+      color: var(--text-tertiary);
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: 0.35px;
+      opacity: 0.95;
+    }
+
+    .title {
+      font-weight: 750;
+      font-size: 16px;
+      color: var(--text-primary);
+      letter-spacing: -0.1px;
+    }
+
+    /* Form Elements */
+    .input {
+      width: 100%;
+      padding: 15px 20px;
+      border-radius: 12px;
+      border: 1.5px solid var(--border-color);
+      background: rgba(20, 28, 50, 0.35);
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      letter-spacing: 0.3px;
+      outline: none;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      backdrop-filter: blur(2px);
+    }
+
+    .input::placeholder {
+      color: var(--text-tertiary);
+      font-weight: 400;
+    }
+
+    .input:focus {
+      border-color: var(--accent-primary);
+      background: rgba(20, 28, 50, 0.55);
+      box-shadow: 0 0 0 4px rgba(0, 229, 255, 0.12), inset 0 0 0 1px rgba(0, 229, 255, 0.08);
+    }
+
+    textarea.input {
+      font-family: 'Geist Mono', monospace;
+      resize: vertical;
+      font-size: 13px;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      padding: 7px 11px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      font-size: 11px;
+      color: var(--text-tertiary);
+      font-weight: 550;
+      font-family: 'Geist Mono', monospace;
+      background: rgba(25, 35, 55, 0.5);
+      letter-spacing: 0.35px;
+      backdrop-filter: blur(1px);
+    }
+
+    .badge[style*="border-color: #22c55e"],
+    .badge[style*="border-color: #10b981"],
+    .badge[style*="border-color: #0d9668"] {
+      border-color: var(--accent-success) !important;
+      background: rgba(16, 185, 129, 0.1) !important;
+      color: var(--accent-success) !important;
+    }
+
+    /* Layout Utilities */
+    .row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .split {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    /* List */
+    .list {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .item {
+      padding: 18px;
+      border: 1.2px solid var(--border-color);
+      border-radius: 14px;
+      background: rgba(20, 28, 50, 0.45);
+      backdrop-filter: blur(4px);
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .item:hover {
+      background: rgba(30, 41, 59, 0.65);
+      border-color: var(--accent-primary);
+      box-shadow: 0 8px 24px rgba(0, 229, 255, 0.08);
+    }
+
+    /* Media */
+    iframe,
+    video {
+      border: 0;
+      width: 100%;
+      height: 260px;
+      border-radius: 14px;
+      background: rgba(10, 14, 39, 0.5);
+      display: block;
+    }
+
+    .muted {
+      opacity: 0.75;
+    }
+
+    /* Checkbox styling */
+    input[type="checkbox"] {
+      cursor: pointer;
+      accent-color: var(--accent-primary);
+      width: 18px;
+      height: 18px;
+    }
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+
+    /* Form Message */
+    #formMsg {
+      margin-top: 16px;
+      font-weight: 500;
+      color: var(--accent-success);
+      letter-spacing: 0.3px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    #formMsg:empty {
+      display: none;
+    }
+
+    /* Animation */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .item,
+    .card {
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(71, 85, 105, 0.4);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(71, 85, 105, 0.6);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .split {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .card.left,
+      .card.right {
+        grid-column: span 12 !important;
+      }
+
+      .row {
+        flex-direction: column;
+      }
+
+      .row > * {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="nav">
+    <div class="navin">
+      <div class="brand">🛠 Admin • LinuxDojo</div>
+      <div class="row">
+        <a class="btn" href="/">Home</a>
+        <a class="btn" href="/login.html">Login</a>
+        <button id="btnLogout" class="btn">Logout</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div id="gate" class="card">
+      <div class="title">Checking access...</div>
+      <div class="small" id="gateMsg">Please wait</div>
+    </div>
+
+    <div id="app" class="grid" style="display:none;">
+      <div class="card left">
+        <div class="split">
+          <div>
+            <div class="title" id="formTitle">Create Command</div>
+            <div class="small">Fields marked required must be filled.</div>
+          </div>
+          <span class="badge" id="roleBadge">admin</span>
+        </div>
+
+        <form id="form" style="margin-top:20px;">
+          <input type="hidden" id="editingId" value="" />
+
+          <div class="small" style="margin-top:16px;font-weight:550;">Title (required)</div>
+          <input class="input" id="title" placeholder="e.g. cd" required />
+
+          <div class="small" style="margin-top:16px;font-weight:550;">Slug (required, unique)</div>
+          <input class="input" id="slug" placeholder="e.g. cd" required />
+
+          <div class="small" style="margin-top:16px;font-weight:550;">Syntax (required)</div>
+          <input class="input" id="syntax" placeholder="e.g. cd [path]" required />
+
+          <div class="small" style="margin-top:16px;font-weight:550;">Description (required)</div>
+          <textarea class="input" id="description" rows="5" required placeholder="Explain what it does..."></textarea>
+
+          <div class="small" style="margin-top:16px;font-weight:550;">Asciinema URL (required)</div>
+          <input class="input" id="asciinema_url" required placeholder="https://asciinema.org/a/xxxxx" />
+
+          <div class="small" style="margin-top:16px;font-weight:550;">Video URL (required, any URL)</div>
+          <input class="input" id="video_url" required placeholder="YouTube / Vimeo / NotebookLM / any URL" />
+
+          <div class="small" style="margin-top:16px;font-weight:550;">Tags (optional, comma separated)</div>
+          <input class="input" id="tags" placeholder="filesystem, navigation" />
+
+          <div class="small" style="margin-top:16px;font-weight:550;">Lesson Steps (optional, one per line)</div>
+          <textarea class="input" id="lesson_steps" rows="5" placeholder="pwd&#10;ls&#10;cd .."></textarea>
+
+          <div class="row" style="justify-content:space-between;margin-top:20px;">
+            <label class="small" style="font-weight:550;color:var(--text-secondary);">
+              <input type="checkbox" id="published" />
+              Published
+            </label>
+
+            <div class="row">
+              <button type="button" id="btnReset" class="btn">Reset</button>
+              <button type="submit" class="btn primary" id="btnSave">Save</button>
+            </div>
+          </div>
+
+          <div id="formMsg"></div>
+        </form>
+      </div>
+
+      <div class="card right">
+        <div class="title">Live Preview</div>
+        <div class="small muted">Asciinema normalized to iframe; Video tries embed + always shows open link.</div>
+
+        <div style="margin-top:20px;">
+          <div class="small" style="font-weight:550;margin-bottom:10px;">Asciinema Preview</div>
+          <div id="asciBox" class="item"></div>
+        </div>
+
+        <div style="margin-top:20px;">
+          <div class="small" style="font-weight:550;margin-bottom:10px;">Video Preview</div>
+          <div id="vidBox" class="item"></div>
+        </div>
+
+        <div style="margin-top:24px;" class="split">
+          <div class="title">Commands</div>
+          <button class="btn" id="btnReload">Reload</button>
+        </div>
+
+        <div id="list" class="list"></div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+    const cfg = window.__CONFIG__;
+    const supabase = createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
+
+    const gate = document.getElementById("gate");
+    const gateMsg = document.getElementById("gateMsg");
+    const app = document.getElementById("app");
+    const btnLogout = document.getElementById("btnLogout");
+
+    // form elements
+    const form = document.getElementById("form");
+    const editingId = document.getElementById("editingId");
+    const formTitle = document.getElementById("formTitle");
+    const formMsg = document.getElementById("formMsg");
+
+    const titleEl = document.getElementById("title");
+    const slugEl = document.getElementById("slug");
+    const syntaxEl = document.getElementById("syntax");
+    const descEl = document.getElementById("description");
+    const asciEl = document.getElementById("asciinema_url");
+    const vidEl = document.getElementById("video_url");
+    const tagsEl = document.getElementById("tags");
+    const stepsEl = document.getElementById("lesson_steps");
+    const pubEl = document.getElementById("published");
+
+    const asciBox = document.getElementById("asciBox");
+    const vidBox = document.getElementById("vidBox");
+    const listEl = document.getElementById("list");
+
+    document.getElementById("btnReset").addEventListener("click", resetForm);
+    document.getElementById("btnReload").addEventListener("click", loadCommands);
+
+    btnLogout.addEventListener("click", async () => {
+      await supabase.auth.signOut();
+      location.href = "/login.html";
+    });
+
+    function escapeHtml(s){ return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+    function normalizeAsciinema(url){
+      url = (url||"").trim();
+      if (!url) return "";
+      if (url.includes("/iframe")) return url;
+      const m = url.match(/asciinema\.org\/a\/([^/?#]+)/i);
+      if (m?.[1]) return `https://asciinema.org/a/${m[1]}/iframe`;
+      return url;
+    }
+
+    function normalizeVideo(url){
+      url = (url||"").trim();
+      if (!url) return "";
+      const ytWatch = url.match(/youtube\.com\/watch\?v=([^&]+)/i);
+      const ytShort = url.match(/youtu\.be\/([^?&/]+)/i);
+      const ytEmbed = url.match(/youtube\.com\/embed\/([^?&/]+)/i);
+      const ytId = ytEmbed?.[1] || ytWatch?.[1] || ytShort?.[1];
+      if (ytId) return `https://www.youtube.com/embed/${ytId}`;
+
+      const vimeoPlayer = url.match(/player\.vimeo\.com\/video\/(\d+)/i);
+      const vimeo = url.match(/vimeo\.com\/(\d+)/i);
+      const vimeoId = vimeoPlayer?.[1] || vimeo?.[1];
+      if (vimeoId) return `https://player.vimeo.com/video/${vimeoId}`;
+
+      return url;
+    }
+
+    function isDirectVideo(url){
+      return /\.(mp4|webm|ogg)(\?.*)?$/i.test(url);
+    }
+
+    function renderPreviews() {
+      const asci = normalizeAsciinema(asciEl.value);
+      const vid = normalizeVideo(vidEl.value);
+
+      asciBox.innerHTML = asci.includes("asciinema.org/a/") && asci.includes("/iframe")
+        ? `<iframe src="${asci}"></iframe><div class="small" style="margin-top:12px;">${escapeHtml(asci)}</div>`
+        : `<div class="small">Paste Asciinema link like https://asciinema.org/a/xxxxx</div>`;
+
+      if (!vid) {
+        vidBox.innerHTML = `<div class="small">Paste any video URL to preview.</div>`;
+      } else if (isDirectVideo(vid)) {
+        vidBox.innerHTML = `<video controls src="${vid}"></video>
+          <div class="small" style="margin-top:12px;"><a href="${vid}" target="_blank" style="color:var(--accent-primary);">Open video ↗</a></div>`;
+      } else {
+        vidBox.innerHTML = `<iframe src="${vid}" allowfullscreen></iframe>
+          <div class="small" style="margin-top:12px;"><a href="${vid}" target="_blank" style="color:var(--accent-primary);">Open video ↗</a></div>
+          <div class="small muted" style="margin-top:8px;">If iframe is blocked by provider, Open video will still work.</div>`;
+      }
+    }
+
+    [asciEl, vidEl].forEach(el => el.addEventListener("input", renderPreviews));
+
+    async function gatekeep() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) {
+        gateMsg.innerHTML = `Not logged in. <a href="/login.html" style="color:var(--accent-primary);">Go to login</a>`;
+        return;
+      }
+
+      const { data: prof, error } = await supabase
+        .from("profiles")
+        .select("role,email")
+        .eq("id", session.user.id)
+        .single();
+
+      if (error) {
+        gateMsg.textContent = "Profile not found yet. Log out and log in once again.";
+        return;
+      }
+
+      if (prof.role !== "admin") {
+        gateMsg.innerHTML = `You are logged in as <b>${escapeHtml(prof.email||"")}</b> but not admin.
+          Ask admin to promote you.`;
+        return;
+      }
+
+      gate.style.display = "none";
+      app.style.display = "grid";
+      renderPreviews();
+      await loadCommands();
+    }
+
+    function parseTags(s){
+      const arr = (s||"").split(/[,|\n]/g).map(x => x.trim().toLowerCase()).filter(Boolean);
+      return [...new Set(arr)];
+    }
+
+    function parseSteps(s){
+      const arr = (s||"").split("\n").map(x => x.trim()).filter(Boolean);
+      return arr;
+    }
+
+    function resetForm(){
+      editingId.value = "";
+      formTitle.textContent = "Create Command";
+      formMsg.textContent = "";
+      titleEl.value = "";
+      slugEl.value = "";
+      syntaxEl.value = "";
+      descEl.value = "";
+      asciEl.value = "";
+      vidEl.value = "";
+      tagsEl.value = "";
+      stepsEl.value = "";
+      pubEl.checked = false;
+      renderPreviews();
+    }
+
+    async function loadCommands() {
+      listEl.innerHTML = `<div class="item small">Loading...</div>`;
+      const { data, error } = await supabase
+        .from("commands")
+        .select("id,slug,title,syntax,published,updated_at")
+        .order("updated_at", { ascending: false });
+
+      if (error) {
+        listEl.innerHTML = `<div class="item">Error: ${escapeHtml(error.message)}</div>`;
+        return;
+      }
+
+      if (!data?.length) {
+        listEl.innerHTML = `<div class="item small">No commands yet.</div>`;
+        return;
+      }
+
+      listEl.innerHTML = data.map(c => `
+        <div class="item">
+          <div class="split">
+            <div>
+              <div class="title">${escapeHtml(c.title)} ${c.published ? `<span class="badge">published</span>` : `<span class="badge">draft</span>`}</div>
+              <div class="small" style="margin-top:8px;">
+                <span class="badge">${escapeHtml(c.syntax)}</span>
+                <span class="badge">/${escapeHtml(c.slug)}</span>
+              </div>
+              <div class="small muted" style="margin-top:8px;">Updated: ${escapeHtml(c.updated_at)}</div>
+            </div>
+            <div class="row">
+              <a class="btn" href="/command.html?slug=${encodeURIComponent(c.slug)}" target="_blank">View</a>
+              <a class="btn" href="/practice.html?slug=${encodeURIComponent(c.slug)}" target="_blank">Practice</a>
+              <button class="btn" data-act="edit" data-id="${c.id}">Edit</button>
+              <button class="btn" data-act="toggle" data-id="${c.id}" data-pub="${c.published}">${c.published ? "Unpublish" : "Publish"}</button>
+              <button class="btn danger" data-act="del" data-id="${c.id}">Delete</button>
+            </div>
+          </div>
+        </div>
+      `).join("");
+
+      listEl.querySelectorAll("button[data-act]").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          const act = btn.getAttribute("data-act");
+          const id = btn.getAttribute("data-id");
+          if (!id) return;
+
+          if (act === "toggle") {
+            const pub = btn.getAttribute("data-pub") === "true";
+            await supabase.from("commands").update({ published: !pub }).eq("id", id);
+            await loadCommands();
+          }
+
+          if (act === "del") {
+            if (!confirm("Delete this command?")) return;
+            await supabase.from("commands").delete().eq("id", id);
+            resetForm();
+            await loadCommands();
+          }
+
+          if (act === "edit") {
+            const { data: cmd, error } = await supabase.from("commands").select("*").eq("id", id).single();
+            if (error) { alert(error.message); return; }
+            editingId.value = cmd.id;
+            formTitle.textContent = "Edit Command";
+            titleEl.value = cmd.title || "";
+            slugEl.value = cmd.slug || "";
+            syntaxEl.value = cmd.syntax || "";
+            descEl.value = cmd.description || "";
+            asciEl.value = cmd.asciinema_url || "";
+            vidEl.value = cmd.video_url || "";
+            tagsEl.value = (cmd.tags || []).join(", ");
+            stepsEl.value = (cmd.lesson_steps || []).join("\n");
+            pubEl.checked = !!cmd.published;
+            renderPreviews();
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }
+        });
+      });
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      formMsg.textContent = "";
+
+      const payload = {
+        title: titleEl.value.trim(),
+        slug: slugEl.value.trim().toLowerCase(),
+        syntax: syntaxEl.value.trim(),
+        description: descEl.value.trim(),
+        asciinema_url: normalizeAsciinema(asciEl.value),
+        video_url: normalizeVideo(vidEl.value),
+        tags: parseTags(tagsEl.value),
+        lesson_steps: parseSteps(stepsEl.value),
+        published: pubEl.checked
+      };
+
+      if (!payload.title || !payload.slug || !payload.syntax || !payload.description || !payload.asciinema_url || !payload.video_url) {
+        formMsg.textContent = "Please fill all required fields.";
+        return;
+      }
+
+      try {
+        if (editingId.value) {
+          const { error } = await supabase.from("commands").update(payload).eq("id", editingId.value);
+          if (error) throw error;
+          formMsg.textContent = "✅ Updated";
+        } else {
+          const { error } = await supabase.from("commands").insert(payload);
+          if (error) throw error;
+          formMsg.textContent = "✅ Created";
+        }
+        await loadCommands();
+      } catch (err) {
+        formMsg.textContent = "Error: " + (err?.message || String(err));
+      }
+    });
+
+    gatekeep();
+  </script>
+</body>
+</html>
