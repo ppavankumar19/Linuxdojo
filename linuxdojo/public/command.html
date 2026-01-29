@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Command • LinuxDojo</title>
+  <script src="/config.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg-primary: linear-gradient(145deg, #050810 0%, #0f1419 30%, #1a0f2e 60%, #0d1b2a 100%);
+      --bg-secondary: rgba(20, 28, 50, 0.45);
+      --bg-tertiary: rgba(35, 48, 70, 0.25);
+      --text-primary: #f8fafc;
+      --text-secondary: #d4d8e0;
+      --text-tertiary: #8b95a8;
+      --accent-primary: #00e5ff;
+      --accent-secondary: #0fb0ff;
+      --accent-tertiary: #6366f1;
+      --accent-success: #10b981;
+      --border-color: rgba(80, 95, 120, 0.18);
+      --border-light: rgba(148, 163, 184, 0.08);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg-primary);
+      background-attachment: fixed;
+      color: var(--text-primary);
+      font-size: 14px;
+      line-height: 1.65;
+      letter-spacing: 0.4px;
+      font-weight: 400;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 32px 18px;
+    }
+
+    /* Navigation */
+    .nav-top {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 32px;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 11px 18px;
+      border-radius: 10px;
+      border: 1.2px solid var(--border-color);
+      background: rgba(25, 35, 55, 0.5);
+      color: var(--text-primary);
+      cursor: pointer;
+      font-weight: 550;
+      font-size: 13px;
+      letter-spacing: 0.3px;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      font-family: 'Inter', sans-serif;
+      text-decoration: none;
+    }
+
+    .btn:hover {
+      background: rgba(40, 55, 80, 0.65);
+      border-color: var(--accent-secondary);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(15, 176, 255, 0.1);
+    }
+
+    .btn.primary {
+      background: linear-gradient(135deg, var(--accent-success) 0%, #0d9668 100%);
+      color: #071018;
+      border-color: transparent;
+      font-weight: 700;
+    }
+
+    .btn.primary:hover {
+      background: linear-gradient(135deg, #13d48f 0%, #10b981 100%);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+      transform: translateY(-2px);
+    }
+
+    /* Cards */
+    .card {
+      border: 1.2px solid var(--border-color);
+      border-radius: 16px;
+      background: rgba(20, 28, 50, 0.45);
+      backdrop-filter: blur(5px);
+      padding: 28px;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .card:hover {
+      background: rgba(30, 41, 59, 0.55);
+      border-color: rgba(0, 229, 255, 0.12);
+    }
+
+    /* Typography */
+    h1 {
+      font-size: 38px;
+      font-weight: 950;
+      margin: 0 0 12px;
+      line-height: 1.15;
+      letter-spacing: -0.7px;
+      background: linear-gradient(135deg, #ffffff 0%, var(--text-secondary) 40%, var(--accent-primary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .small {
+      color: var(--text-tertiary);
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: 0.35px;
+      opacity: 0.95;
+    }
+
+    .description {
+      margin-top: 16px;
+      line-height: 1.7;
+      color: var(--text-secondary);
+      font-weight: 400;
+      letter-spacing: 0.35px;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      padding: 7px 11px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      font-size: 11px;
+      color: var(--text-tertiary);
+      font-weight: 550;
+      font-family: 'Geist Mono', monospace;
+      background: rgba(25, 35, 55, 0.5);
+      letter-spacing: 0.35px;
+      backdrop-filter: blur(1px);
+    }
+
+    /* Tags */
+    .tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    /* Header Section */
+    .header-section {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      margin-bottom: 24px;
+    }
+
+    .header-left {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .header-right {
+      display: flex;
+      gap: 12px;
+    }
+
+    /* Media Section */
+    .media-section {
+      margin-top: 28px;
+    }
+
+    .media-label {
+      font-size: 13px;
+      font-weight: 550;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+      letter-spacing: 0.35px;
+    }
+
+    .media-box {
+      margin-top: 12px;
+      border-radius: 14px;
+      overflow: hidden;
+      background: rgba(10, 14, 39, 0.5);
+    }
+
+    iframe,
+    video {
+      border: 0;
+      width: 100%;
+      height: 360px;
+      display: block;
+    }
+
+    .media-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--accent-primary);
+      font-size: 13px;
+      font-weight: 500;
+      margin-top: 12px;
+      letter-spacing: 0.3px;
+      transition: all 0.3s ease;
+    }
+
+    .media-link:hover {
+      color: var(--accent-secondary);
+      gap: 10px;
+    }
+
+    .media-fallback {
+      padding: 20px;
+      background: rgba(99, 102, 241, 0.05);
+      border: 1px solid rgba(99, 102, 241, 0.15);
+      border-radius: 12px;
+      color: var(--text-tertiary);
+      font-size: 13px;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .card {
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(71, 85, 105, 0.4);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(71, 85, 105, 0.6);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        padding: 24px 14px;
+      }
+
+      h1 {
+        font-size: 28px;
+        margin-bottom: 10px;
+      }
+
+      .header-section {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .header-right {
+        width: 100%;
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+
+      iframe,
+      video {
+        height: 240px;
+      }
+
+      .nav-top {
+        margin-bottom: 24px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="nav-top">
+      <a href="/" class="btn">← Back</a>
+      <a href="/login.html" class="btn">Login</a>
+    </div>
+
+    <div id="box" class="card">
+      <div class="small">Loading command documentation...</div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+    const cfg = window.__CONFIG__;
+    const supabase = createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
+
+    const params = new URLSearchParams(location.search);
+    const slug = params.get("slug");
+
+    function escapeHtml(s){ return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+    function normalizeAsciinema(url){
+      url = (url||"").trim();
+      if (!url) return "";
+      if (url.includes("/iframe")) return url;
+      const m = url.match(/asciinema\.org\/a\/([^/?#]+)/i);
+      if (m?.[1]) return `https://asciinema.org/a/${m[1]}/iframe`;
+      return url;
+    }
+
+    function normalizeVideo(url){
+      url = (url||"").trim();
+      if (!url) return "";
+      const ytWatch = url.match(/youtube\.com\/watch\?v=([^&]+)/i);
+      const ytShort = url.match(/youtu\.be\/([^?&/]+)/i);
+      const ytEmbed = url.match(/youtube\.com\/embed\/([^?&/]+)/i);
+      const ytId = ytEmbed?.[1] || ytWatch?.[1] || ytShort?.[1];
+      if (ytId) return `https://www.youtube.com/embed/${ytId}`;
+
+      const vimeoPlayer = url.match(/player\.vimeo\.com\/video\/(\d+)/i);
+      const vimeo = url.match(/vimeo\.com\/(\d+)/i);
+      const vimeoId = vimeoPlayer?.[1] || vimeo?.[1];
+      if (vimeoId) return `https://player.vimeo.com/video/${vimeoId}`;
+
+      return url;
+    }
+
+    function isDirectVideo(url){
+      return /\.(mp4|webm|ogg)(\?.*)?$/i.test(url);
+    }
+
+    async function load() {
+      const box = document.getElementById("box");
+      if (!slug) {
+        box.innerHTML = `<div class="small">Missing slug parameter.</div>`;
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("commands")
+        .select("*")
+        .eq("slug", slug)
+        .single();
+
+      if (error) {
+        box.innerHTML = `<div class="small">Error: ${escapeHtml(error.message)}</div>`;
+        return;
+      }
+
+      const asci = normalizeAsciinema(data.asciinema_url);
+      const vid = normalizeVideo(data.video_url);
+      const practiceLink = `/practice.html?slug=${encodeURIComponent(data.slug)}`;
+
+      const asciHtml = asci && asci.includes("asciinema.org/a/") && asci.includes("/iframe")
+        ? `<div class="media-box"><iframe src="${asci}"></iframe></div>`
+        : `<div class="media-fallback">Asciinema URL is not embeddable. <a href="${escapeHtml(data.asciinema_url)}" target="_blank" class="media-link">Open terminal recording ↗</a></div>`;
+
+      const vidHtml = !vid
+        ? `<div class="media-fallback">No video URL provided.</div>`
+        : isDirectVideo(vid)
+          ? `<div class="media-box"><video controls src="${vid}"></video></div><a href="${vid}" target="_blank" class="media-link">Open video file ↗</a>`
+          : `<div class="media-box"><iframe src="${vid}" allowfullscreen></iframe></div><a href="${vid}" target="_blank" class="media-link">Open in new window ↗</a><div class="small" style="margin-top:10px;color:var(--text-tertiary);">If embed is blocked by provider, open in new window will work.</div>`;
+
+      box.innerHTML = `
+        <div class="header-section">
+          <div class="header-left">
+            <h1>${escapeHtml(data.title)}</h1>
+            <div class="small" style="margin-top:8px;"><span class="badge">${escapeHtml(data.syntax)}</span></div>
+            <div class="tags">
+              ${(data.tags || []).slice(0, 10).map(t => `<span class="badge">#${escapeHtml(t)}</span>`).join("")}
+            </div>
+          </div>
+          <div class="header-right">
+            <a class="btn primary" href="${practiceLink}">Practice →</a>
+          </div>
+        </div>
+
+        <div class="description">${escapeHtml(data.description).replace(/\n/g,"<br>")}</div>
+
+        <div class="media-section">
+          <div class="media-label">📺 Terminal Demo (Asciinema)</div>
+          ${asciHtml}
+        </div>
+
+        <div class="media-section">
+          <div class="media-label">▶ Explanation Video</div>
+          ${vidHtml}
+        </div>
+      `;
+    }
+
+    load();
+  </script>
+</body>
+</html>
