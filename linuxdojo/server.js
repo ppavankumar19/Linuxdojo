@@ -28,7 +28,6 @@ app.get("/config.js", (req, res) => {
   `);
 });
 
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`✅ LinuxDojo running: http://0.0.0.0:${PORT}`);
+app.listen(PORT, () => {
+  console.log(`✅ LinuxDojo running: http://localhost:${PORT}`);
 });
-
