@@ -7,292 +7,445 @@
   <script src="/config.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&display=swap" rel="stylesheet">
   
   <style>
+    /* ══════════════════════════════════════════
+       TOKENS
+    ══════════════════════════════════════════ */
     :root {
-      color-scheme: dark;
-      --bg-primary: linear-gradient(145deg, #050810 0%, #0f1419 30%, #1a0f2e 60%, #0d1b2a 100%);
-      --bg-secondary: rgba(20, 28, 50, 0.45);
-      --bg-tertiary: rgba(35, 48, 70, 0.25);
-      --text-primary: #f8fafc;
-      --text-secondary: #d4d8e0;
-      --text-tertiary: #8b95a8;
-      --accent-primary: #00e5ff;
-      --accent-secondary: #0fb0ff;
-      --accent-tertiary: #6366f1;
-      --accent-success: #10b981;
-      --accent-warning: #f59e0b;
-      --accent-error: #ef4444;
-      --border-color: rgba(80, 95, 120, 0.18);
-      --border-light: rgba(148, 163, 184, 0.08);
+      --bg:         #07090f;
+      --surface:    #0e1524;
+      --surface2:   #14203a;
+      --ink:        #f4f7ff;
+      --ink2:       #d8e2f4;
+      --ink3:       #a4b8d8;
+      --ink4:       #6e88a8;
+      --lime:       #c9ff47;
+      --lime-dim:   rgba(201,255,71,0.12);
+      --lime-glow:  rgba(201,255,71,0.25);
+      --cyan:       #2efff6;
+      --cyan-dim:   rgba(46,255,246,0.1);
+      --violet:     #b09fff;
+      --violet-dim: rgba(176,159,255,0.12);
+      --amber:      #ffd070;
+      --amber-dim:  rgba(255,208,112,0.12);
+      --green:      #52ffa8;
+      --green-dim:  rgba(82,255,168,0.12);
+      --red:        #ff7070;
+      --red-dim:    rgba(255,112,112,0.12);
+      --border:     rgba(255,255,255,0.09);
+      --border2:    rgba(255,255,255,0.16);
+      --border3:    rgba(255,255,255,0.25);
     }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    /* ══════════════════════════════════════════  RESET  */
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
 
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: var(--bg-primary);
-      background-attachment: fixed;
-      color: var(--text-primary);
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
       font-size: 14px;
-      line-height: 1.65;
-      letter-spacing: 0.4px;
-      font-weight: 400;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
     }
 
-    a {
-      color: inherit;
-      text-decoration: none;
+    a { color:inherit; text-decoration:none; }
+
+    /* ══════════════════════════════════════════  BG LAYERS */
+    body::before {
+      content:'';
+      position:fixed; inset:0;
+      background-image: radial-gradient(rgba(255,255,255,0.07) 1px, transparent 1px);
+      background-size: 28px 28px;
+      pointer-events:none; z-index:0;
+    }
+    body::after {
+      content:'';
+      position:fixed; inset:0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events:none; z-index:0; opacity:0.5;
     }
 
-    /* Navigation */
+    .orb {
+      position:fixed; border-radius:50%;
+      filter:blur(110px);
+      pointer-events:none; z-index:0;
+    }
+    .orb-1 {
+      width:600px; height:600px;
+      background:radial-gradient(circle, rgba(201,255,71,0.075) 0%, transparent 70%);
+      top:-200px; left:-150px;
+      animation:drift1 20s ease-in-out infinite;
+    }
+    .orb-2 {
+      width:500px; height:500px;
+      background:radial-gradient(circle, rgba(46,255,246,0.06) 0%, transparent 70%);
+      bottom:-120px; right:-120px;
+      animation:drift2 26s ease-in-out infinite;
+    }
+
+    @keyframes drift1 {
+      0%,100%{transform:translate(0,0);}
+      40%{transform:translate(70px,50px);}
+      70%{transform:translate(-20px,80px);}
+    }
+    @keyframes drift2 {
+      0%,100%{transform:translate(0,0);}
+      50%{transform:translate(-60px,-70px);}
+    }
+
+    /* ══════════════════════════════════════════  NAV */
     .nav {
-      position: sticky;
-      top: 0;
-      backdrop-filter: blur(14px);
-      background: rgba(5, 8, 16, 0.65);
-      border-bottom: 1px solid rgba(0, 229, 255, 0.06);
-      z-index: 10;
+      position:sticky; top:0; z-index:200;
+      background:rgba(7,9,15,0.86);
+      backdrop-filter:blur(24px) saturate(1.7);
+      -webkit-backdrop-filter:blur(24px) saturate(1.7);
+      border-bottom:1px solid var(--border2);
+    }
+
+    .nav::after {
+      content:'';
+      position:absolute;
+      bottom:-1px; left:0; right:0;
+      height:1px;
+      background:linear-gradient(90deg,
+        transparent 0%,
+        rgba(201,255,71,0.55) 25%,
+        rgba(46,255,246,0.45) 55%,
+        rgba(176,159,255,0.4) 80%,
+        transparent 100%);
+      background-size:200% 100%;
+      animation:navLine 5s linear infinite;
+    }
+
+    @keyframes navLine {
+      0%{background-position:0%;}
+      100%{background-position:200%;}
     }
 
     .navin {
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 16px 18px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
+      max-width:1120px;
+      margin:0 auto;
+      padding:0 28px;
+      height:62px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
     }
 
+    /* Brand — typewriter */
     .brand {
-      font-weight: 950;
-      letter-spacing: 1.2px;
-      font-size: 19px;
-      text-transform: uppercase;
-      background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 50%, var(--accent-tertiary) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      font-family:'Space Mono', monospace;
+      font-weight:700;
+      font-size:17px;
+      letter-spacing:3px;
+      text-transform:uppercase;
+      display:flex;
+      align-items:center;
+      user-select:none;
     }
 
-    /* Container */
-    .container {
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 32px 18px;
+    .brand-dollar {
+      color:var(--cyan);
+      margin-right:8px;
+      opacity:0.9;
     }
 
-    /* Grid & Cards */
-    .grid {
-      display: grid;
-      gap: 14px;
-      grid-template-columns: repeat(12, 1fr);
+    #brandText { color:var(--lime); }
+
+    .brand-cursor {
+      display:inline-block;
+      width:9px; height:17px;
+      background:var(--lime);
+      margin-left:3px;
+      vertical-align:middle;
+      border-radius:1px;
+      animation:blink 1s step-end infinite;
     }
 
-    .card {
-      border: 1.2px solid var(--border-color);
-      border-radius: 16px;
-      background: rgba(20, 28, 50, 0.45);
-      backdrop-filter: blur(5px);
-      padding: 24px;
-      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    @keyframes blink {
+      0%,100%{opacity:1;}
+      50%{opacity:0;}
     }
 
-    .card:hover {
-      background: rgba(30, 41, 59, 0.55);
-      border-color: rgba(0, 229, 255, 0.12);
-    }
-
-    .left {
-      grid-column: span 12;
-    }
-
-    .right {
-      grid-column: span 12;
-    }
-
-    @media(min-width: 900px) {
-      .left {
-        grid-column: span 5;
-      }
-      .right {
-        grid-column: span 7;
-      }
-    }
-
-    /* Buttons */
+    /* ══════════════════════════════════════════  BUTTONS */
     .btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      padding: 11px 18px;
-      border-radius: 10px;
-      border: 1.2px solid var(--border-color);
-      background: rgba(25, 35, 55, 0.5);
-      color: var(--text-primary);
+      padding: 9px 18px;
+      border-radius: 8px;
+      border: 1px solid var(--border3);
+      background: transparent;
+      color: var(--ink2);
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
       cursor: pointer;
-      font-weight: 550;
-      font-size: 13px;
-      letter-spacing: 0.3px;
-      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-      font-family: 'Inter', sans-serif;
+      white-space: nowrap;
+      transition: background .22s ease, border-color .22s ease,
+                 color .22s ease, box-shadow .22s ease, transform .18s ease;
     }
 
     .btn:hover:not(:disabled) {
-      background: rgba(40, 55, 80, 0.65);
-      border-color: var(--accent-secondary);
+      background: rgba(201,255,71,0.1);
+      border-color: var(--lime);
+      color: var(--lime);
+      box-shadow: 0 0 20px rgba(201,255,71,0.18), inset 0 1px 0 rgba(201,255,71,0.1);
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(15, 176, 255, 0.1);
     }
+    .btn:active { transform: translateY(0); }
 
     .btn.primary {
-      background: linear-gradient(135deg, var(--accent-success) 0%, #0d9668 100%);
-      color: #071018;
-      border-color: transparent;
-      font-weight: 700;
+      border: 1px solid rgba(201,255,71,0.45);
+      background: var(--lime-dim);
+      color: var(--lime);
+      padding: 11px 24px;
+      font-size: 12px;
+      letter-spacing: 1.5px;
     }
 
     .btn.primary:hover:not(:disabled) {
-      background: linear-gradient(135deg, #13d48f 0%, #10b981 100%);
-      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
-      transform: translateY(-2px);
+      background: var(--lime);
+      border-color: var(--lime);
+      color: #080c00;
+      box-shadow: 0 0 26px var(--lime-glow), 0 4px 18px rgba(0,0,0,0.35);
     }
 
     .btn:disabled {
-      opacity: 0.5;
+      opacity: 0.4;
       cursor: not-allowed;
+      transform: none !important;
     }
 
-    /* Typography */
-    .small {
-      color: var(--text-tertiary);
-      font-size: 13px;
-      font-weight: 400;
-      letter-spacing: 0.35px;
-      opacity: 0.95;
+    /* ══════════════════════════════════════════  CONTAINER */
+    .container {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 64px 28px 96px;
+      position: relative;
+      z-index: 1;
     }
 
-    .mono {
-      font-family: 'Geist Mono', monospace;
-      font-weight: 500;
+    /* ══════════════════════════════════════════  GRID */
+    .grid {
+      display: grid;
+      gap: 20px;
+      grid-template-columns: repeat(12, 1fr);
     }
 
-    /* Meta Section */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 18px;
+      padding: 32px;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp 0.6s ease-out;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg,
+        var(--lime) 0%, var(--cyan) 40%,
+        var(--violet) 75%, var(--lime) 100%);
+      background-size: 200% 100%;
+      animation: shimmerBar 4s linear infinite;
+    }
+
+    @keyframes shimmerBar {
+      0% { background-position: 0%; }
+      100% { background-position: 200%; }
+    }
+
+    .left { grid-column: span 12; }
+    .right { grid-column: span 12; }
+
+    @media(min-width: 900px) {
+      .left { grid-column: span 5; }
+      .right { grid-column: span 7; }
+    }
+
+    /* ══════════════════════════════════════════  META BOX */
     #meta {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 16px;
-      padding: 12px;
+      padding: 16px 18px;
       border-radius: 12px;
-      background: rgba(99, 102, 241, 0.08);
-      border: 1px solid rgba(99, 102, 241, 0.15);
+      background: var(--violet-dim);
+      border: 1px solid rgba(176,159,255,0.35);
+      font-size: 13px;
+      color: var(--ink2);
+      margin-bottom: 20px;
+      font-family: 'DM Sans', sans-serif;
+      line-height: 1.65;
     }
 
     #meta b {
-      color: var(--text-primary);
+      color: var(--violet);
       font-weight: 700;
+      font-family: 'Syne', sans-serif;
     }
 
-    /* Controls */
+    .mono {
+      font-family: 'Space Mono', monospace;
+      font-weight: 500;
+    }
+
+    /* ══════════════════════════════════════════  CONTROLS */
     .controls {
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
       align-items: center;
-      margin-top: 16px;
+      margin-bottom: 20px;
     }
 
-    /* Pills/Badges */
+    /* ══════════════════════════════════════════  PILLS */
     .pill {
       display: inline-flex;
       align-items: center;
-      padding: 8px 12px;
-      border-radius: 12px;
-      border: 1px solid var(--border-color);
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border2);
       font-size: 12px;
-      font-weight: 550;
-      font-family: 'Geist Mono', monospace;
-      color: var(--text-secondary);
-      background: rgba(25, 35, 55, 0.5);
-      letter-spacing: 0.3px;
+      font-weight: 700;
+      font-family: 'Space Mono', monospace;
+      color: var(--ink2);
+      background: rgba(255,255,255,0.06);
+      letter-spacing: 0.5px;
       white-space: nowrap;
     }
 
-    /* Steps Container */
+    /* ══════════════════════════════════════════  STEPS */
     #steps {
       display: grid;
       gap: 10px;
-      margin-top: 16px;
     }
 
     .step {
-      padding: 12px 14px;
-      border: 1.2px solid var(--border-color);
+      padding: 14px 16px;
+      border: 1px solid var(--border2);
       border-radius: 12px;
-      background: rgba(20, 28, 50, 0.4);
-      color: var(--text-secondary);
-      font-family: 'Geist Mono', monospace;
-      font-size: 12px;
+      background: rgba(0,0,0,0.3);
+      color: var(--ink3);
+      font-family: 'Space Mono', monospace;
+      font-size: 13px;
       letter-spacing: 0.3px;
-      transition: all 0.3s ease;
+      transition: all 0.25s ease;
       word-break: break-word;
+      line-height: 1.6;
     }
 
     .step.active {
-      border-color: var(--accent-success);
-      background: rgba(16, 185, 129, 0.12);
-      color: var(--accent-success);
-      font-weight: 600;
-      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+      border-color: var(--lime);
+      background: var(--lime-dim);
+      color: var(--lime);
+      font-weight: 700;
+      box-shadow: 0 0 20px rgba(201,255,71,0.15), inset 0 1px 0 rgba(201,255,71,0.1);
+      transform: translateX(5px);
     }
 
-    /* Textarea */
+    .step.small {
+      font-size: 12px;
+      color: var(--ink4);
+    }
+
+    /* ══════════════════════════════════════════  TERMINAL HEADER */
+    .terminal-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .terminal-title {
+      font-family: 'Space Mono', monospace;
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--lime);
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    .terminal-title::before {
+      content: '$ ';
+      color: var(--cyan);
+    }
+
+    .small {
+      color: var(--ink3);
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: 0.3px;
+    }
+
+    .terminal-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    /* ══════════════════════════════════════════  TEXTAREA */
     textarea {
       width: 100%;
-      min-height: 220px;
-      border-radius: 14px;
-      border: 1.2px solid var(--border-color);
-      background: rgba(10, 14, 39, 0.6);
-      color: var(--text-primary);
-      padding: 16px 18px;
-      font-family: 'Geist Mono', monospace;
-      font-size: 13px;
+      min-height: 280px;
+      border-radius: 12px;
+      border: 1px solid var(--border2);
+      background: rgba(0,0,0,0.5);
+      color: var(--lime);
+      padding: 18px 20px;
+      font-family: 'Space Mono', monospace;
+      font-size: 14px;
       letter-spacing: 0.3px;
+      line-height: 1.7;
       outline: none;
-      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: all 0.25s ease;
       resize: vertical;
-      backdrop-filter: blur(2px);
     }
 
     textarea::placeholder {
-      color: var(--text-tertiary);
+      color: var(--ink4);
       opacity: 0.6;
+      font-style: italic;
     }
 
     textarea:focus {
-      border-color: var(--accent-primary);
-      background: rgba(10, 14, 39, 0.8);
-      box-shadow: 0 0 0 4px rgba(0, 229, 255, 0.12), inset 0 0 0 1px rgba(0, 229, 255, 0.08);
+      border-color: var(--lime);
+      background: rgba(0,0,0,0.7);
+      box-shadow: 0 0 0 3px rgba(201,255,71,0.1);
     }
 
-    /* Messages */
+    /* ══════════════════════════════════════════  MESSAGES */
     #msg,
     #hint {
-      padding: 12px 14px;
-      border-radius: 12px;
-      background: rgba(99, 102, 241, 0.08);
-      border: 1px solid rgba(99, 102, 241, 0.15);
-      color: var(--accent-tertiary);
+      padding: 14px 18px;
+      border-radius: 10px;
+      background: var(--violet-dim);
+      border: 1px solid rgba(176,159,255,0.35);
+      color: var(--violet);
       margin-top: 12px;
       letter-spacing: 0.3px;
       font-weight: 500;
+      font-family: 'Space Mono', monospace;
+      font-size: 13px;
+      line-height: 1.6;
     }
 
     #msg:empty,
@@ -300,122 +453,107 @@
       display: none;
     }
 
-    /* Message States */
-    .ok {
-      color: var(--accent-success);
+    #msg .mono,
+    #hint .mono {
+      color: var(--cyan);
+      font-weight: 700;
     }
 
-    .warn {
-      color: var(--accent-warning);
+    /* Message states */
+    .ok { color: var(--green) !important; }
+    .warn { color: var(--amber) !important; }
+    .error { color: var(--red) !important; }
+
+    #msg.success {
+      background: var(--green-dim);
+      border-color: rgba(82,255,168,0.45);
+      color: var(--green);
     }
 
-    .error {
-      color: var(--accent-error);
+    #msg.error-msg {
+      background: var(--red-dim);
+      border-color: rgba(255,112,112,0.45);
+      color: var(--red);
     }
 
-    /* Header */
-    .practice-header {
-      display: flex;
-      justify-content: space-between;
-      gap: 16px;
-      flex-wrap: wrap;
-      align-items: flex-start;
-      margin-bottom: 16px;
-    }
-
-    .practice-header-left {
-      flex: 1;
-    }
-
-    .practice-header-right {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    /* Animations */
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
+    /* ══════════════════════════════════════════  RESPONSIVE */
+    @media (max-width: 900px) {
+      .left, .right {
+        grid-column: span 12 !important;
       }
     }
 
-    .card {
-      animation: fadeIn 0.4s ease-out;
-    }
-
-    /* Scrollbar */
-    ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
-    }
-
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background: rgba(71, 85, 105, 0.4);
-      border-radius: 4px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-      background: rgba(71, 85, 105, 0.6);
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
+    @media (max-width: 640px) {
       .container {
-        padding: 24px 14px;
+        padding: 48px 20px 72px;
+      }
+
+      .navin {
+        padding: 0 20px;
+      }
+
+      .brand {
+        font-size: 14px;
+        letter-spacing: 2px;
+      }
+
+      .card {
+        padding: 24px;
       }
 
       .controls {
         flex-direction: column;
+        width: 100%;
       }
 
       .controls > * {
         width: 100%;
       }
 
-      .practice-header {
+      .terminal-header {
         flex-direction: column;
       }
 
-      .practice-header-right {
+      .terminal-actions {
         width: 100%;
         flex-direction: column;
       }
 
-      .practice-header-right > * {
+      .terminal-actions > * {
         width: 100%;
       }
 
       textarea {
-        min-height: 180px;
+        min-height: 220px;
+        font-size: 13px;
       }
     }
+
+    /* ══════════════════════════════════════════  SCROLLBAR */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(201,255,71,0.2); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(201,255,71,0.38); }
   </style>
 </head>
 
 <body>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
   <div id="navMount"></div>
 
   <div class="container">
-    <div class="grid" style="margin-top: 16px;">
+    <div class="grid">
       <!-- Left Panel: Steps & Progress -->
       <div class="card left">
-        <div id="meta" class="small">Loading command...</div>
+        <div id="meta">Loading command...</div>
 
         <div class="controls">
           <span class="pill" id="progressPill">Step 0/0</span>
           <span class="pill" id="dbPill">DB: —</span>
-          <button class="btn primary" id="btnNext">Next Step</button>
-          <button class="btn" id="btnResetSteps">Reset Steps</button>
+          <button class="btn primary" id="btnNext">→ Next</button>
+          <button class="btn" id="btnResetSteps">Reset</button>
         </div>
 
         <div id="steps"></div>
@@ -423,24 +561,49 @@
 
       <!-- Right Panel: Practice Terminal -->
       <div class="card right">
-        <div class="practice-header">
-          <div class="practice-header-left">
-            <div class="mono" style="font-weight: 700; font-size: 14px;">$ Practice Terminal</div>
-            <div class="small">Type the command shown in your step. Last line is checked.</div>
+        <div class="terminal-header">
+          <div>
+            <div class="terminal-title">Practice Terminal</div>
+            <div class="small">Type the command shown. Last line is checked.</div>
           </div>
-          <div class="practice-header-right">
+          <div class="terminal-actions">
             <button id="btnClear" class="btn">Clear</button>
-            <button id="btnCheck" class="btn primary">Check</button>
+            <button id="btnCheck" class="btn primary">→ Check</button>
           </div>
         </div>
 
-        <textarea id="term" placeholder="Type your command here:&#10;&#10;pwd&#10;ls&#10;cd .."></textarea>
+        <textarea id="term" placeholder="$ Type your command here:
+
+pwd
+ls
+cd .."></textarea>
 
         <div id="msg"></div>
         <div id="hint"></div>
       </div>
     </div>
   </div>
+
+  <!-- ════════════════════════════════ SCRIPTS ════ -->
+  <script>
+    /* ── Terminal typewriter for brand ─────────────── */
+    (function() {
+      const WORD  = 'LinuxDojo';
+      const el    = document.getElementById('brandText');
+      if (!el) return;
+      let i = 0;
+
+      function type() {
+        if (i < WORD.length) {
+          el.textContent += WORD[i];
+          i++;
+          setTimeout(type, 80 + Math.random() * 80);
+        }
+      }
+
+      setTimeout(type, 400);
+    })();
+  </script>
 
   <script type="module">
     import { getSupabase, getSessionAndRole, renderNav, escapeHtml } from "/js/app.js";
@@ -485,7 +648,7 @@
 
       if (!slug) {
         meta.innerHTML = `<b>Free Practice Mode</b> • Open a command and click Practice to load guided steps.`;
-        stepsBox.innerHTML = `<div class="step small">No command selected.</div>`;
+        stepsBox.innerHTML = `<div class="step small">// No command selected</div>`;
         btnNext.disabled = true;
         btnResetSteps.disabled = true;
         dbPill.textContent = `DB: —`;
@@ -495,7 +658,7 @@
       meta.innerHTML = `<b>${escapeHtml(title || slug)}</b> • <span class="mono">${escapeHtml(syntax || "")}</span>`;
 
       if (!steps.length) {
-        stepsBox.innerHTML = `<div class="step small">No lesson steps added yet. Practice freely.</div>`;
+        stepsBox.innerHTML = `<div class="step small">// No lesson steps. Practice freely.</div>`;
         btnNext.disabled = true;
         btnResetSteps.disabled = true;
         return;
@@ -544,10 +707,10 @@
         .upsert(payload, { onConflict: "user_id,command_slug" });
 
       if (error) {
-        dbPill.innerHTML = `DB: <span class="warn">save failed</span>`;
+        dbPill.innerHTML = `DB: <span class="warn">error</span>`;
         console.error(error);
       } else {
-        dbPill.innerHTML = `DB: <span class="ok">saved</span>`;
+        dbPill.innerHTML = `DB: <span class="ok">✓ saved</span>`;
       }
     }
 
@@ -570,7 +733,7 @@
       }
 
       if (!data) {
-        dbPill.innerHTML = `DB: <span class="small">new</span>`;
+        dbPill.innerHTML = `DB: <span style="color:var(--ink3);">new</span>`;
         return;
       }
 
@@ -580,9 +743,9 @@
       }
 
       if (data.is_completed) {
-        dbPill.innerHTML = `DB: <span class="ok">completed</span>`;
+        dbPill.innerHTML = `DB: <span class="ok">✓ completed</span>`;
       } else {
-        dbPill.innerHTML = `DB: <span class="ok">synced</span>`;
+        dbPill.innerHTML = `DB: <span class="ok">✓ synced</span>`;
       }
     }
 
@@ -590,18 +753,20 @@
       idx = 0;
       saveLocalIndex();
       updateUI();
-      msg.textContent = "✅ Reset to step 1.";
+      msg.className = 'success';
+      msg.textContent = "✓ Reset to step 1";
       hint.textContent = "";
       upsertProgress({ step_index: 0, is_completed: false, completed_at: null });
     }
 
     function checkTyped() {
       msg.textContent = "";
+      msg.className = "";
       hint.textContent = "";
 
       const cur = getCurrentStep();
       if (!cur) {
-        msg.textContent = "No guided step loaded. Practice freely.";
+        msg.textContent = "// No guided step loaded. Practice freely.";
         return;
       }
 
@@ -614,7 +779,7 @@
       const expected = normalizeLine(cur);
 
       if (!typed) {
-        msg.textContent = "Type a command first (last line is checked).";
+        msg.textContent = "// Type a command first (last line is checked)";
         hint.innerHTML = `Try: <span class="mono">${escapeHtml(expected)}</span>`;
         return;
       }
@@ -625,7 +790,8 @@
         typed.startsWith(expected);
 
       if (ok) {
-        msg.innerHTML = `✅ Correct! <span class="mono">${escapeHtml(expected)}</span>`;
+        msg.className = 'success';
+        msg.innerHTML = `✓ Correct! <span class="mono">${escapeHtml(expected)}</span>`;
 
         if (idx < steps.length - 1) {
           idx += 1;
@@ -637,12 +803,18 @@
           upsertProgress({ step_index: idx, is_completed: true, completed_at: new Date().toISOString() });
         }
       } else {
-        msg.innerHTML = `❌ Mismatch. Expected: <span class="mono">${escapeHtml(expected)}</span>`;
+        msg.className = 'error-msg';
+        msg.innerHTML = `✗ Mismatch. Expected: <span class="mono">${escapeHtml(expected)}</span>`;
         hint.innerHTML = `You typed: <span class="mono">${escapeHtml(typed)}</span>`;
       }
     }
 
-    btnClear.addEventListener("click", () => (term.value = ""));
+    btnClear.addEventListener("click", () => {
+      term.value = "";
+      msg.textContent = "";
+      hint.textContent = "";
+    });
+    
     btnCheck.addEventListener("click", checkTyped);
 
     btnNext.addEventListener("click", () => {
@@ -650,7 +822,8 @@
         idx += 1;
         saveLocalIndex();
         updateUI();
-        msg.textContent = "→ Moved to next step.";
+        msg.textContent = "→ Moved to next step";
+        msg.className = "";
         hint.textContent = "";
         upsertProgress({ step_index: idx, is_completed: false, completed_at: null });
       }
