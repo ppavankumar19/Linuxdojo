@@ -7,496 +7,1101 @@
     <script src="/config.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&display=swap" rel="stylesheet">
     <style>
+
+      /* ══════════════════════════════════════════
+         TOKENS  — greys are now noticeably brighter
+      ══════════════════════════════════════════ */
       :root {
-        color-scheme: dark;
-        --bg-primary: linear-gradient(145deg, #050810 0%, #0f1419 30%, #1a0f2e 60%, #0d1b2a 100%);
-        --bg-secondary: rgba(20, 28, 50, 0.45);
-        --bg-tertiary: rgba(35, 48, 70, 0.25);
-        --text-primary: #f8fafc;
-        --text-secondary: #d4d8e0;
-        --text-tertiary: #8b95a8;
-        --accent-primary: #00e5ff;
-        --accent-secondary: #0fb0ff;
-        --accent-tertiary: #6366f1;
-        --border-color: rgba(80, 95, 120, 0.18);
-        --border-light: rgba(148, 163, 184, 0.08);
+        --bg:         #07090f;
+        --surface:    #0e1524;
+        --surface2:   #14203a;
+        --ink:        #f4f7ff;          /* primary text  */
+        --ink2:       #d8e2f4;          /* was #c4d0e8 — lifted */
+        --ink3:       #a4b8d8;          /* was #7e94b5 — lifted */
+        --ink4:       #6e88a8;          /* new mid-dim for placeholders */
+        --lime:       #c9ff47;
+        --lime-dim:   rgba(201,255,71,0.12);
+        --lime-glow:  rgba(201,255,71,0.25);
+        --cyan:       #2efff6;
+        --cyan-dim:   rgba(46,255,246,0.1);
+        --violet:     #b09fff;          /* brighter violet */
+        --violet-dim: rgba(176,159,255,0.12);
+        --amber:      #ffd070;          /* brighter amber */
+        --green:      #52ffa8;          /* brighter green */
+        --green-dim:  rgba(82,255,168,0.12);
+        --red:        #ff7070;
+        --border:     rgba(255,255,255,0.09);
+        --border2:    rgba(255,255,255,0.16);
+        --border3:    rgba(255,255,255,0.25);
       }
 
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
+      /* ══════════════════════════════════════════  RESET  */
+      *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+      html { scroll-behavior:smooth; }
 
       body {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-        background: var(--bg-primary);
-        background-attachment: fixed;
-        color: var(--text-primary);
+        font-family: 'DM Sans', system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--ink);
         font-size: 14px;
-        line-height: 1.65;
-        letter-spacing: 0.4px;
-        font-weight: 400;
+        line-height: 1.6;
+        min-height: 100vh;
+        overflow-x: hidden;
       }
 
-      a {
-        color: inherit;
-        text-decoration: none;
+      a { color:inherit; text-decoration:none; }
+
+      /* ══════════════════════════════════════════  BG LAYERS */
+      /* Dot grid */
+      body::before {
+        content:'';
+        position:fixed; inset:0;
+        background-image: radial-gradient(rgba(255,255,255,0.07) 1px, transparent 1px);
+        background-size: 28px 28px;
+        pointer-events:none; z-index:0;
+      }
+      /* Noise */
+      body::after {
+        content:'';
+        position:fixed; inset:0;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+        pointer-events:none; z-index:0; opacity:0.5;
       }
 
-      /* Navigation */
+      .orb {
+        position:fixed; border-radius:50%;
+        filter:blur(110px);
+        pointer-events:none; z-index:0;
+      }
+      .orb-1 {
+        width:700px; height:700px;
+        background:radial-gradient(circle, rgba(201,255,71,0.075) 0%, transparent 70%);
+        top:-250px; left:-200px;
+        animation:drift1 20s ease-in-out infinite;
+      }
+      .orb-2 {
+        width:600px; height:600px;
+        background:radial-gradient(circle, rgba(46,255,246,0.06) 0%, transparent 70%);
+        bottom:-150px; right:-150px;
+        animation:drift2 26s ease-in-out infinite;
+      }
+      .orb-3 {
+        width:380px; height:380px;
+        background:radial-gradient(circle, rgba(176,159,255,0.07) 0%, transparent 70%);
+        top:45%; left:52%;
+        animation:drift3 17s ease-in-out infinite;
+      }
+
+      @keyframes drift1 {
+        0%,100%{transform:translate(0,0);}
+        40%{transform:translate(70px,50px);}
+        70%{transform:translate(-20px,80px);}
+      }
+      @keyframes drift2 {
+        0%,100%{transform:translate(0,0);}
+        50%{transform:translate(-60px,-70px);}
+      }
+      @keyframes drift3 {
+        0%,100%{transform:translate(-50%,-50%) scale(1);}
+        50%{transform:translate(-50%,-50%) scale(1.25);}
+      }
+
+      /* ══════════════════════════════════════════  NAV */
       .nav {
-        position: sticky;
-        top: 0;
-        backdrop-filter: blur(14px);
-        background: rgba(5, 8, 16, 0.65);
-        border-bottom: 1px solid rgba(0, 229, 255, 0.06);
-        z-index: 10;
+        position:sticky; top:0; z-index:200;
+        background:rgba(7,9,15,0.86);
+        backdrop-filter:blur(24px) saturate(1.7);
+        -webkit-backdrop-filter:blur(24px) saturate(1.7);
+        border-bottom:1px solid var(--border2);
+      }
+
+      .nav::after {
+        content:'';
+        position:absolute;
+        bottom:-1px; left:0; right:0;
+        height:1px;
+        background:linear-gradient(90deg,
+          transparent 0%,
+          rgba(201,255,71,0.55) 25%,
+          rgba(46,255,246,0.45) 55%,
+          rgba(176,159,255,0.4) 80%,
+          transparent 100%);
+        background-size:200% 100%;
+        animation:navLine 5s linear infinite;
+      }
+
+      @keyframes navLine {
+        0%{background-position:0%;}
+        100%{background-position:200%;}
       }
 
       .navin {
-        max-width: 1000px;
-        margin: 0 auto;
-        padding: 16px 18px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 12px;
+        max-width:1120px;
+        margin:0 auto;
+        padding:0 28px;
+        height:62px;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:16px;
       }
 
+      /* Brand — typewriter target */
       .brand {
-        font-weight: 950;
-        letter-spacing: 1.2px;
-        font-size: 19px;
-        text-transform: uppercase;
-        background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 50%, var(--accent-tertiary) 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
+        font-family:'Space Mono', monospace;
+        font-weight:700;
+        font-size:17px;
+        letter-spacing:3px;
+        text-transform:uppercase;
+        display:flex;
+        align-items:center;
+        user-select:none;
       }
 
-      /* Buttons */
-      .btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 11px 18px;
-        border-radius: 10px;
-        border: 1.2px solid var(--border-color);
-        background: rgba(25, 35, 55, 0.5);
-        color: var(--text-primary);
-        cursor: pointer;
-        font-weight: 550;
-        font-size: 13px;
-        letter-spacing: 0.3px;
-        transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      .brand-dollar {
+        color:var(--cyan);
+        margin-right:8px;
+        opacity:0.9;
       }
 
-      .btn:hover {
-        background: rgba(40, 55, 80, 0.65);
-        border-color: var(--accent-secondary);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(15, 176, 255, 0.1);
+      /* Typed text fills in here */
+      #brandText { color:var(--lime); }
+
+      /* Blinking cursor */
+      .brand-cursor {
+        display:inline-block;
+        width:9px; height:17px;
+        background:var(--lime);
+        margin-left:3px;
+        vertical-align:middle;
+        border-radius:1px;
+        animation:blink 1s step-end infinite;
       }
 
-      /* Container */
+      @keyframes blink {
+        0%,100%{opacity:1;}
+        50%{opacity:0;}
+      }
+
+      /* ── Nav mount buttons/links ── */
+      #navMount {
+        display:flex;
+        align-items:center;
+        gap:10px;
+      }
+
+      #navMount a {
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        padding:9px 18px;
+        border-radius:8px;
+        border:1px solid var(--border3);
+        background:transparent;
+        color:var(--ink2);
+        font-family:'Space Mono', monospace;
+        font-size:11px;
+        font-weight:700;
+        letter-spacing:1.2px;
+        text-transform:uppercase;
+        cursor:pointer;
+        white-space:nowrap;
+        transition:background .22s ease, border-color .22s ease,
+                   color .22s ease, box-shadow .22s ease, transform .18s ease;
+      }
+
+      #navMount a:hover {
+        background:rgba(201,255,71,0.1);
+        border-color:var(--lime);
+        color:var(--lime);
+        box-shadow:0 0 20px rgba(201,255,71,0.18), inset 0 1px 0 rgba(201,255,71,0.1);
+        transform:translateY(-2px);
+      }
+      #navMount a:active{transform:translateY(0);}
+
+      #navMount button {
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        padding:9px 20px;
+        border-radius:8px;
+        border:1px solid rgba(201,255,71,0.45);
+        background:var(--lime-dim);
+        color:var(--lime);
+        font-family:'Space Mono', monospace;
+        font-size:11px;
+        font-weight:700;
+        letter-spacing:1.2px;
+        text-transform:uppercase;
+        cursor:pointer;
+        white-space:nowrap;
+        transition:background .22s ease, border-color .22s ease,
+                   color .22s ease, box-shadow .22s ease, transform .18s ease;
+      }
+
+      #navMount button:hover {
+        background:var(--lime);
+        border-color:var(--lime);
+        color:#080c00;
+        box-shadow:0 0 26px var(--lime-glow), 0 4px 18px rgba(0,0,0,0.35);
+        transform:translateY(-2px);
+      }
+      #navMount button:active{transform:translateY(0);}
+
+      /* ══════════════════════════════════════════  LAYOUT */
       .container {
-        max-width: 1000px;
-        margin: 0 auto;
-        padding: 32px 18px;
+        max-width:1120px;
+        margin:0 auto;
+        padding:64px 28px 96px;
+        position:relative;
+        z-index:1;
       }
 
-      /* Typography */
+      /* ══════════════════════════════════════════  HERO */
+      .hero { margin-bottom:60px; }
+
+      .hero-eyebrow {
+        display:inline-flex;
+        align-items:center;
+        gap:8px;
+        padding:6px 14px;
+        border-radius:5px;
+        border:1px solid rgba(201,255,71,0.38);
+        background:rgba(201,255,71,0.08);
+        font-family:'Space Mono', monospace;
+        font-size:10px;
+        font-weight:700;
+        letter-spacing:2.5px;
+        text-transform:uppercase;
+        color:var(--lime);
+        margin-bottom:22px;
+      }
+
+      .eyebrow-dot {
+        width:6px; height:6px;
+        background:var(--lime);
+        border-radius:50%;
+        flex-shrink:0;
+        animation:pulseDot 2s ease-in-out infinite;
+      }
+
+      @keyframes pulseDot {
+        0%,100%{opacity:1; transform:scale(1);}
+        50%{opacity:0.6; transform:scale(0.7);}
+      }
+
       h1 {
-        font-size: 42px;
-        font-weight: 950;
-        margin: 0 0 14px;
-        line-height: 1.15;
-        letter-spacing: -0.8px;
-        background: linear-gradient(135deg, #ffffff 0%, var(--text-secondary) 40%, var(--accent-primary) 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
+        font-family:'Syne', sans-serif;
+        font-size:clamp(44px, 6.5vw, 76px);
+        font-weight:800;
+        line-height:0.93;
+        letter-spacing:-2.5px;
+        color:var(--ink);
+        margin-bottom:22px;
       }
 
-      .small {
-        color: var(--text-tertiary);
-        font-size: 13px;
-        font-weight: 400;
-        letter-spacing: 0.35px;
-        opacity: 0.95;
+      h1 .hl-lime { color:var(--lime); }
+      h1 .hl-cyan { color:var(--cyan); }
+
+      .hero-desc {
+        font-size:16px;
+        font-weight:400;
+        color:var(--ink2);           /* now bright */
+        max-width:500px;
+        line-height:1.72;
+        margin-bottom:36px;
       }
 
-      /* Search & Controls */
-      .controls {
-        display: grid;
-        gap: 12px;
-        margin-top: 24px;
+      /* Stats */
+      .stats-row {
+        display:flex;
+        flex-wrap:wrap;
       }
 
-      @media (min-width: 760px) {
-        .controls {
-          grid-template-columns: 1fr auto;
-          gap: 12px;
-        }
+      .stat {
+        padding-right:28px;
+        margin-right:28px;
+        border-right:1px solid var(--border2);
+      }
+      .stat:last-child{border-right:none; margin-right:0; padding-right:0;}
+
+      .stat-num {
+        font-family:'Space Mono', monospace;
+        font-size:26px;
+        font-weight:700;
+        color:var(--ink);
+        line-height:1;
+        letter-spacing:-0.5px;
       }
 
-      .input {
-        width: 100%;
-        padding: 15px 20px;
-        border-radius: 12px;
-        border: 1.5px solid var(--border-color);
-        background: rgba(20, 28, 50, 0.35);
-        color: var(--text-primary);
-        font-family: 'Inter', sans-serif;
-        font-size: 14px;
-        font-weight: 400;
-        letter-spacing: 0.3px;
-        outline: none;
-        transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-        backdrop-filter: blur(2px);
+      .stat-lbl {
+        font-size:10px;
+        font-weight:700;
+        letter-spacing:2px;
+        text-transform:uppercase;
+        color:var(--ink3);           /* now #a4b8d8 — readable */
+        margin-top:5px;
       }
 
-      .input::placeholder {
-        color: var(--text-tertiary);
-        font-weight: 400;
+      /* ══════════════════════════════════════════  SEARCH CARD */
+      .search-card {
+        background:var(--surface);
+        border:1px solid var(--border2);
+        border-radius:18px;
+        padding:26px 28px 24px;
+        margin-bottom:20px;
+        position:relative;
+        overflow:hidden;
       }
 
-      .input:focus {
-        border-color: var(--accent-primary);
-        background: rgba(20, 28, 50, 0.55);
-        box-shadow: 0 0 0 4px rgba(0, 229, 255, 0.12), inset 0 0 0 1px rgba(0, 229, 255, 0.08);
+      .search-card::before {
+        content:'';
+        position:absolute;
+        top:0; left:0; right:0;
+        height:2px;
+        background:linear-gradient(90deg,
+          var(--lime) 0%, var(--cyan) 40%,
+          var(--violet) 75%, var(--lime) 100%);
+        background-size:200% 100%;
+        animation:shimmerBar 4s linear infinite;
       }
 
-      /* Chips (Tag Filter) */
-      .chips {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        margin-top: 16px;
+      @keyframes shimmerBar {
+        0%{background-position:0%;}
+        100%{background-position:200%;}
       }
+
+      .sec-label {
+        font-family:'Space Mono', monospace;
+        font-size:10px;
+        font-weight:700;
+        letter-spacing:2.5px;
+        text-transform:uppercase;
+        color:var(--ink2);           /* bright */
+        margin-bottom:14px;
+        display:flex;
+        align-items:center;
+        gap:7px;
+      }
+
+      .sec-label-sym { color:var(--lime); font-size:12px; }
+
+      .search-row {
+        display:grid;
+        grid-template-columns:1fr auto;
+        gap:10px;
+        align-items:stretch;
+      }
+
+      @media(max-width:560px){ .search-row{grid-template-columns:1fr;} }
+
+      .input-wrap { position:relative; display:flex; align-items:center; }
+
+      .input-dollar {
+        position:absolute; left:16px;
+        font-family:'Space Mono', monospace;
+        font-size:15px;
+        color:var(--lime);
+        pointer-events:none; z-index:2;
+        user-select:none; line-height:1;
+      }
+
+      input#q {
+        width:100%;
+        padding:14px 18px 14px 42px;
+        border-radius:10px;
+        border:1px solid var(--border2);
+        background:rgba(0,0,0,0.5);
+        color:var(--ink);
+        font-family:'Space Mono', monospace;
+        font-size:13px;
+        outline:none;
+        transition:border-color .25s ease, box-shadow .25s ease, background .25s ease;
+      }
+
+      input#q::placeholder {
+        font-family:'DM Sans', sans-serif;
+        font-style:italic;
+        color:var(--ink4);
+        font-size:13px;
+        opacity:1;
+      }
+
+      input#q:focus {
+        border-color:var(--lime);
+        background:rgba(0,0,0,0.7);
+        box-shadow:0 0 0 3px rgba(201,255,71,0.1), 0 0 22px rgba(201,255,71,0.06);
+      }
+
+      .btn-clear {
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        gap:6px;
+        padding:13px 22px;
+        border-radius:10px;
+        border:1px solid var(--border3);
+        background:rgba(255,255,255,0.04);
+        color:var(--ink2);
+        cursor:pointer;
+        font-family:'Space Mono', monospace;
+        font-size:11px;
+        font-weight:700;
+        letter-spacing:1.2px;
+        text-transform:uppercase;
+        transition:background .22s ease, border-color .22s ease,
+                   color .22s ease, box-shadow .22s ease, transform .18s ease;
+      }
+
+      .btn-clear:hover {
+        background:rgba(255,112,112,0.14);
+        border-color:var(--red);
+        color:var(--red);
+        box-shadow:0 0 16px rgba(255,112,112,0.16);
+        transform:translateY(-2px);
+      }
+      .btn-clear:active{transform:translateY(0);}
+
+      /* ══════════════════════════════════════════  CHIPS */
+      .filter-section { margin-bottom:28px; }
+
+      .chips { display:flex; gap:8px; flex-wrap:wrap; }
 
       .chip {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 9px 16px;
-        border-radius: 999px;
-        border: 1.2px solid var(--border-color);
-        background: rgba(20, 28, 50, 0.4);
-        color: var(--text-secondary);
-        cursor: pointer;
-        font-size: 12px;
-        font-weight: 500;
-        letter-spacing: 0.2px;
-        transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-        white-space: nowrap;
-        backdrop-filter: blur(1px);
+        display:inline-flex;
+        align-items:center;
+        padding:8px 15px;
+        border-radius:7px;
+        border:1px solid var(--border2);
+        background:rgba(255,255,255,0.05);
+        color:var(--ink2);           /* bright */
+        cursor:pointer;
+        font-family:'Space Mono', monospace;
+        font-size:11px;
+        font-weight:600;
+        letter-spacing:0.5px;
+        white-space:nowrap;
+        user-select:none;
+        transition:background .2s ease, border-color .2s ease,
+                   color .2s ease, transform .18s ease, box-shadow .2s ease;
       }
 
       .chip:hover {
-        background: rgba(35, 48, 70, 0.55);
-        border-color: var(--accent-secondary);
-        transform: translateY(-1px);
+        background:var(--cyan-dim);
+        border-color:var(--cyan);
+        color:var(--cyan);
+        transform:translateY(-2px);
+        box-shadow:0 4px 14px rgba(46,255,246,0.14);
       }
+      .chip:active{transform:translateY(0);}
 
       .chip.active {
-        background: linear-gradient(135deg, rgba(0, 229, 255, 0.18), rgba(15, 176, 255, 0.12));
-        border-color: var(--accent-primary);
-        color: var(--accent-primary);
-        font-weight: 600;
-        box-shadow: 0 0 12px rgba(0, 229, 255, 0.15);
+        background:var(--cyan-dim);
+        border-color:var(--cyan);
+        color:var(--cyan);
+        font-weight:700;
+        box-shadow:0 0 0 1px rgba(46,255,246,0.22),
+                   0 0 18px rgba(46,255,246,0.15),
+                   inset 0 1px 0 rgba(46,255,246,0.12);
       }
 
-      /* List */
-      .list {
-        display: grid;
-        gap: 12px;
-        margin-top: 20px;
+      /* ══════════════════════════════════════════  COUNT */
+      #count {
+        font-family:'Space Mono', monospace;
+        font-size:11px;
+        font-weight:700;
+        letter-spacing:2px;
+        text-transform:uppercase;
+        color:var(--ink2);
+        margin-bottom:14px;
+        display:flex;
+        align-items:center;
+        gap:8px;
       }
 
+      #count::before {
+        content:'›';
+        color:var(--lime);
+        font-size:20px;
+        line-height:1;
+      }
+
+      /* ══════════════════════════════════════════  LIST */
+      .list { display:grid; gap:10px; }
+
+      /* ── Card ── */
       .item {
-        padding: 20px;
-        border: 1.2px solid var(--border-color);
-        border-radius: 14px;
-        background: rgba(20, 28, 50, 0.45);
-        backdrop-filter: blur(5px);
-        cursor: pointer;
-        transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-        display: block;
+        display:block;
+        border:1px solid var(--border2);
+        border-radius:14px;
+        background:var(--surface);
+        position:relative;
+        overflow:hidden;
+        text-decoration:none;
+        transition:background .25s ease, border-color .25s ease,
+                   transform .22s cubic-bezier(0.16,1,0.3,1), box-shadow .25s ease;
+        animation:fadeUp .45s ease-out both;
+      }
+
+      .item:nth-child(1) {animation-delay:.04s;}
+      .item:nth-child(2) {animation-delay:.08s;}
+      .item:nth-child(3) {animation-delay:.12s;}
+      .item:nth-child(4) {animation-delay:.16s;}
+      .item:nth-child(5) {animation-delay:.20s;}
+      .item:nth-child(6) {animation-delay:.24s;}
+      .item:nth-child(7) {animation-delay:.28s;}
+      .item:nth-child(8) {animation-delay:.32s;}
+      .item:nth-child(9) {animation-delay:.36s;}
+      .item:nth-child(10){animation-delay:.40s;}
+
+      @keyframes fadeUp {
+        from{opacity:0; transform:translateY(18px);}
+        to{opacity:1; transform:translateY(0);}
+      }
+
+      /* Left accent bar */
+      .item::before {
+        content:'';
+        position:absolute;
+        left:0; top:0; bottom:0;
+        width:3px;
+        background:linear-gradient(180deg, var(--lime) 0%, var(--cyan) 100%);
+        opacity:0;
+        border-radius:0 2px 2px 0;
+        transition:opacity .25s ease;
+      }
+
+      /* Shimmer sweep */
+      .item::after {
+        content:'';
+        position:absolute; inset:0;
+        background:linear-gradient(105deg,
+          transparent 30%, rgba(201,255,71,0.035) 50%, transparent 70%);
+        transform:translateX(-100%);
+        transition:transform .55s ease;
+        pointer-events:none;
       }
 
       .item:hover {
-        background: rgba(30, 41, 59, 0.65);
-        border-color: var(--accent-primary);
-        transform: translateX(5px);
-        box-shadow: 0 8px 24px rgba(0, 229, 255, 0.08);
+        background:var(--surface2);
+        border-color:rgba(201,255,71,0.38);
+        transform:translateX(7px);
+        box-shadow:-8px 0 30px rgba(201,255,71,0.08), 0 6px 24px rgba(0,0,0,0.38);
       }
 
-      .row {
-        display: flex;
-        justify-content: space-between;
-        gap: 10px;
-        align-items: flex-start;
+      .item:hover::before{opacity:1;}
+      .item:hover::after{transform:translateX(100%);}
+
+      /* ── Card body ── */
+      .item-body {
+        padding:20px 22px 0 24px;
+        display:flex;
+        justify-content:space-between;
+        align-items:flex-start;
+        gap:16px;
       }
 
-      .title {
-        font-weight: 750;
-        font-size: 15px;
-        color: var(--text-primary);
-        letter-spacing: -0.1px;
-        text-transform: none;
+      .item-left { flex:1; min-width:0; }
+
+      /* Title row */
+      .item-title-row {
+        display:flex;
+        align-items:center;
+        gap:10px;
+        flex-wrap:wrap;
+        margin-bottom:10px;
+      }
+
+      .item-title {
+        font-family:'Syne', sans-serif;
+        font-weight:700;
+        font-size:16px;
+        color:var(--ink);
+        letter-spacing:-0.2px;
+        transition:color .22s ease;
+      }
+
+      .item:hover .item-title{color:var(--lime);}
+
+      /* Done pill */
+      .done-pill {
+        display:inline-flex;
+        align-items:center;
+        gap:5px;
+        padding:3px 10px;
+        border-radius:20px;
+        border:1px solid rgba(82,255,168,0.45);
+        background:var(--green-dim);
+        color:var(--green);
+        font-family:'Space Mono', monospace;
+        font-size:9px;
+        font-weight:700;
+        letter-spacing:1.5px;
+        text-transform:uppercase;
+      }
+      .done-pill::before{content:'✓'; font-size:10px;}
+
+      /* Meta badges */
+      .item-meta {
+        display:flex;
+        align-items:center;
+        gap:7px;
+        flex-wrap:wrap;
+        margin-bottom:10px;
       }
 
       .badge {
-        display: inline-block;
-        padding: 7px 11px;
-        border-radius: 8px;
-        border: 1px solid var(--border-color);
-        font-size: 11px;
-        color: var(--text-tertiary);
-        font-weight: 550;
-        font-family: 'Geist Mono', monospace;
-        background: rgba(25, 35, 55, 0.5);
-        letter-spacing: 0.35px;
-        backdrop-filter: blur(1px);
+        display:inline-flex;
+        align-items:center;
+        padding:4px 10px;
+        border-radius:6px;
+        font-family:'Space Mono', monospace;
+        font-size:11px;
+        font-weight:600;
+        white-space:nowrap;
+        border:1px solid transparent;
       }
 
-      .badge[style*="border-color: #22c55e"] {
-        border-color: #10b981 !important;
-        background: rgba(16, 185, 129, 0.1) !important;
-        color: #10b981 !important;
+      .badge-syntax {
+        color:#72f7ef;
+        border-color:rgba(46,255,246,0.35);
+        background:rgba(46,255,246,0.09);
       }
 
-      .tags {
-        margin-top: 10px;
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
+      .badge-slug {
+        color:#c8bcff;
+        border-color:rgba(176,159,255,0.35);
+        background:var(--violet-dim);
       }
 
-      #count {
-        margin-top: 16px;
-        font-weight: 500;
-        color: var(--text-secondary);
-        letter-spacing: 0.3px;
+      /* Tags */
+      .item-tags { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px; }
+
+      .badge-tag {
+        color:var(--ink2);           /* now bright */
+        border-color:var(--border2);
+        background:rgba(255,255,255,0.06);
+        font-size:10px;
+        padding:3px 9px;
       }
 
-      /* Scrollbar */
-      ::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
+      .badge-tag::before {
+        content:'#';
+        color:var(--amber);
+        margin-right:2px;
       }
 
-      ::-webkit-scrollbar-track {
-        background: transparent;
+      /* ── EXTRA INFO ROW — shown under every card ── */
+      .item-extra {
+        display:flex;
+        align-items:stretch;
+        gap:0;
+        border-top:1px solid var(--border);
+        margin-top:4px;
       }
 
-      ::-webkit-scrollbar-thumb {
-        background: rgba(71, 85, 105, 0.4);
-        border-radius: 4px;
+      .item-extra-cell {
+        flex:1;
+        display:flex;
+        flex-direction:column;
+        gap:3px;
+        padding:12px 14px;
+        border-right:1px solid var(--border);
+        transition:background .2s ease;
       }
 
-      ::-webkit-scrollbar-thumb:hover {
-        background: rgba(71, 85, 105, 0.6);
+      .item-extra-cell:last-child { border-right:none; }
+
+      .item:hover .item-extra-cell { background:rgba(255,255,255,0.02); }
+
+      .extra-key {
+        font-family:'Space Mono', monospace;
+        font-size:9px;
+        font-weight:700;
+        letter-spacing:2px;
+        text-transform:uppercase;
+        color:var(--ink4);
       }
 
-      /* Animation */
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(10px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
+      .extra-val {
+        font-family:'Space Mono', monospace;
+        font-size:11px;
+        font-weight:600;
+        color:var(--ink2);
+        letter-spacing:0.2px;
       }
 
-      .item {
-        animation: fadeIn 0.4s ease-out;
+      .extra-val.lime  { color:var(--lime); }
+      .extra-val.cyan  { color:var(--cyan); }
+      .extra-val.amber { color:var(--amber); }
+      .extra-val.violet{ color:var(--violet); }
+
+      /* Arrow */
+      .item-arrow {
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        width:38px; height:38px;
+        flex-shrink:0;
+        align-self:center;
+        border-radius:9px;
+        border:1px solid var(--border2);
+        background:rgba(255,255,255,0.05);
+        color:var(--ink2);
+        font-size:17px;
+        font-family:'Space Mono', monospace;
+        margin-right:2px;
+        transition:background .22s ease, border-color .22s ease,
+                   color .22s ease, transform .22s ease, box-shadow .22s ease;
       }
+
+      .item:hover .item-arrow {
+        background:var(--lime);
+        border-color:var(--lime);
+        color:#0a0e00;
+        transform:translateX(5px);
+        box-shadow:0 0 18px var(--lime-glow);
+      }
+
+      /* ══════════════════════════════════════════  EMPTY */
+      .empty {
+        padding:64px 24px;
+        text-align:center;
+        border:1px dashed var(--border2);
+        border-radius:14px;
+        background:var(--surface);
+      }
+
+      .empty-icon { font-size:38px; margin-bottom:12px; }
+
+      .empty p {
+        font-family:'Space Mono', monospace;
+        color:var(--ink2);
+        font-size:13px;
+        font-weight:600;
+      }
+
+      /* ══════════════════════════════════════════  SCROLLBAR */
+      ::-webkit-scrollbar{width:5px; height:5px;}
+      ::-webkit-scrollbar-track{background:transparent;}
+      ::-webkit-scrollbar-thumb{background:rgba(201,255,71,0.2); border-radius:3px;}
+      ::-webkit-scrollbar-thumb:hover{background:rgba(201,255,71,0.38);}
+
     </style>
   </head>
   <body>
-    <div id="navMount"></div>
-    <div class="container">
-      <h1 style="margin:10px 0 6px;">Linux Commands</h1>
-      <div class="small">Search, filter by tags, open lessons, and practice.</div>
 
-      <div class="controls">
-        <input id="q" class="input" placeholder="Search by title / slug / syntax (ex: cd, chmod, pipes)..." />
-        <button id="clear" class="btn">Clear</button>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <!-- NAV -->
+    <nav class="nav">
+      <div class="navin">
+        <div class="brand">
+          <span class="brand-dollar">$&nbsp;</span>
+          <span id="brandText"></span>
+          <span class="brand-cursor"></span>
+        </div>
+        <div id="navMount"></div>
+      </div>
+    </nav>
+
+    <!-- PAGE -->
+    <div class="container">
+
+      <!-- Hero -->
+      <div class="hero">
+        <div class="hero-eyebrow">
+          <span class="eyebrow-dot"></span>
+          Interactive Learning Terminal
+        </div>
+
+        <h1>
+          Master<br>
+          <span class="hl-lime">Linux</span>
+          <span class="hl-cyan"> Commands</span>
+        </h1>
+
+        <p class="hero-desc">
+          Search, explore, and practice real Linux commands. Structured lessons, hands-on exercises, and full progress tracking.
+        </p>
+
+        <div class="stats-row">
+          <div class="stat">
+            <div class="stat-num" id="stat-total">—</div>
+            <div class="stat-lbl">Commands</div>
+          </div>
+          <div class="stat">
+            <div class="stat-num" id="stat-done">—</div>
+            <div class="stat-lbl">Completed</div>
+          </div>
+          <div class="stat">
+            <div class="stat-num" id="stat-tags">—</div>
+            <div class="stat-lbl">Categories</div>
+          </div>
+        </div>
       </div>
 
-      <div id="chips" class="chips"></div>
-      <div id="count" class="small"></div>
+      <!-- Search -->
+      <div class="search-card">
+        <div class="sec-label">
+          <span class="sec-label-sym">//</span> Search Commands
+        </div>
+        <div class="search-row">
+          <div class="input-wrap">
+            <span class="input-dollar">$</span>
+            <input id="q" placeholder="Search by command, slug or syntax — e.g. chmod, pipes, cd …" />
+          </div>
+          <button id="clear" class="btn-clear">✕ Clear</button>
+        </div>
+      </div>
 
+      <!-- Filter -->
+      <div class="filter-section">
+        <div class="sec-label">
+          <span class="sec-label-sym">#</span> Filter by Category
+        </div>
+        <div id="chips" class="chips"></div>
+      </div>
+
+      <!-- Count -->
+      <div id="count"></div>
+
+      <!-- List -->
       <div id="list" class="list"></div>
+
     </div>
+
+    <!-- ════════════════════════════════ SCRIPTS ════ -->
+    <script>
+      /* ── Terminal typewriter for brand ─────────────── */
+      (function() {
+        const WORD  = 'LinuxDojo';
+        const el    = document.getElementById('brandText');
+        let i = 0;
+
+        function type() {
+          if (i < WORD.length) {
+            el.textContent += WORD[i];
+            i++;
+            /* Slightly random delay for authentic typing feel */
+            setTimeout(type, 80 + Math.random() * 80);
+          }
+          /* After typing, cursor keeps blinking — no further action needed */
+        }
+
+        /* Small boot delay so nav is visible before typing starts */
+        setTimeout(type, 400);
+      })();
+    </script>
 
     <script type="module">
       import { getSupabase, getSessionAndRole, renderNav, escapeHtml } from "/js/app.js";
 
-      const supabase = getSupabase();
-      const navMount = document.getElementById("navMount");
-      const listEl = document.getElementById("list");
-      const chipsEl = document.getElementById("chips");
-      const countEl = document.getElementById("count");
-      const qEl = document.getElementById("q");
-      const clearBtn = document.getElementById("clear");
+      const supabase   = getSupabase();
+      const navMount   = document.getElementById("navMount");
+      const listEl     = document.getElementById("list");
+      const chipsEl    = document.getElementById("chips");
+      const countEl    = document.getElementById("count");
+      const qEl        = document.getElementById("q");
+      const clearBtn   = document.getElementById("clear");
+      const statTotal  = document.getElementById("stat-total");
+      const statDone   = document.getElementById("stat-done");
+      const statTags   = document.getElementById("stat-tags");
 
-      let all = [];
-      let activeTag = null;
+      let all          = [];
+      let activeTag    = null;
       let completedSet = new Set();
 
-      function renderList(items) {
-        if (!items.length) {
-          listEl.innerHTML = `<div class="item">No results found.</div>`;
-          return;
-        }
-        listEl.innerHTML = items
-          .map(
-            (c) => `
-          <a class="item" href="/command.html?slug=${encodeURIComponent(c.slug)}">
-            <div class="row">
-              <div>
-                <div class="title">
-                  ${escapeHtml(c.title)}
-                  ${
-                    completedSet.has(c.slug)
-                      ? `<span class="badge" style="margin-left:8px;border-color:#10b981;background:rgba(16, 185, 129, 0.1);color:#10b981;">✅ Completed</span>`
-                      : ``
-                  }
-                </div>
-                <div class="small" style="margin-top:8px;">
-                  <span class="badge">${escapeHtml(c.syntax)}</span>
-                  <span class="badge">/${escapeHtml(c.slug)}</span>
-                </div>
-                <div class="tags">
-                  ${(c.tags || [])
-                    .slice(0, 8)
-                    .map(
-                      (t) => `<span class="badge">#${escapeHtml(t)}</span>`
-                    )
-                    .join("")}
-                </div>
-              </div>
-              <div class="small">Open →</div>
-            </div>
-          </a>
-        `
-          )
-          .join("");
+      /* ── Difficulty label helper ─── */
+      function difficultyLabel(tags) {
+        if (!tags || !tags.length) return { label:'—', cls:'', level:0 };
+        const t = tags.map(x => x.toLowerCase());
+        if (t.includes('advanced') || t.includes('expert'))
+          return { label:'Advanced', cls:'red', level:3 };
+        if (t.includes('intermediate') || t.includes('scripting'))
+          return { label:'Intermediate', cls:'amber', level:2 };
+        return { label:'Beginner', cls:'lime', level:1 };
       }
 
+      /* ── Category guesser ─── */
+      function categoryFromTags(tags) {
+        if (!tags || !tags.length) return '—';
+        const priority = [
+          'filesystem','networking','process','permissions',
+          'text','archive','system','shell','scripting','user'
+        ];
+        const t = tags.map(x => x.toLowerCase());
+        for (const p of priority) {
+          if (t.some(x => x.includes(p))) return p.charAt(0).toUpperCase() + p.slice(1);
+        }
+        return tags[0].charAt(0).toUpperCase() + tags[0].slice(1);
+      }
+
+      /* ── Render list ─── */
+      function renderList(items) {
+        if (!items.length) {
+          listEl.innerHTML = `
+            <div class="empty">
+              <div class="empty-icon">⌀</div>
+              <p>// No commands match your query. Try something else.</p>
+            </div>`;
+          return;
+        }
+
+        listEl.innerHTML = items.map(c => {
+          const diff = difficultyLabel(c.tags);
+          const cat  = categoryFromTags(c.tags);
+          const tagCount = (c.tags || []).length;
+
+          return `
+          <a class="item" href="/command.html?slug=${encodeURIComponent(c.slug)}">
+            <div class="item-body">
+              <div class="item-left">
+
+                <div class="item-title-row">
+                  <span class="item-title">${escapeHtml(c.title)}</span>
+                  ${completedSet.has(c.slug) ? `<span class="done-pill">Done</span>` : ''}
+                </div>
+
+                <div class="item-meta">
+                  <span class="badge badge-syntax">${escapeHtml(c.syntax)}</span>
+                  <span class="badge badge-slug">/${escapeHtml(c.slug)}</span>
+                </div>
+
+                <div class="item-tags">
+                  ${(c.tags || []).slice(0,8).map(t =>
+                    `<span class="badge badge-tag">${escapeHtml(t)}</span>`
+                  ).join('')}
+                </div>
+
+              </div>
+              <div class="item-arrow">→</div>
+            </div>
+
+            <!-- Extra info row -->
+            <div class="item-extra">
+              <div class="item-extra-cell">
+                <span class="extra-key">Difficulty</span>
+                <span class="extra-val ${diff.cls}">${diff.label}</span>
+              </div>
+              <div class="item-extra-cell">
+                <span class="extra-key">Category</span>
+                <span class="extra-val cyan">${escapeHtml(cat)}</span>
+              </div>
+              <div class="item-extra-cell">
+                <span class="extra-key">Tags</span>
+                <span class="extra-val amber">${tagCount} tag${tagCount !== 1 ? 's' : ''}</span>
+              </div>
+              <div class="item-extra-cell">
+                <span class="extra-key">Lesson</span>
+                <span class="extra-val violet">Open →</span>
+              </div>
+            </div>
+          </a>`;
+        }).join('');
+      }
+
+      /* ── Filter ─── */
       function filtered() {
-        const q = (qEl.value || "").trim().toLowerCase();
+        const q = (qEl.value || '').trim().toLowerCase();
         let items = all.slice();
 
         if (activeTag) {
-          items = items.filter((c) =>
-            (c.tags || [])
-              .map((x) => String(x).toLowerCase())
-              .includes(activeTag)
+          items = items.filter(c =>
+            (c.tags || []).map(x => String(x).toLowerCase()).includes(activeTag)
           );
         }
 
         if (q) {
-          items = items.filter((c) => {
+          items = items.filter(c => {
             const hay = `${c.title} ${c.slug} ${c.syntax}`.toLowerCase();
             return hay.includes(q);
           });
         }
 
-        countEl.textContent = `${items.length} command(s)`;
+        countEl.textContent = `${items.length} command${items.length !== 1 ? 's' : ''} found`;
         renderList(items);
       }
 
+      /* ── Chips ─── */
       function buildChips() {
         const set = new Set();
-        all.forEach((c) =>
-          (c.tags || []).forEach((t) => set.add(String(t).toLowerCase()))
-        );
+        all.forEach(c => (c.tags || []).forEach(t => set.add(String(t).toLowerCase())));
         const tags = Array.from(set).sort();
 
-        chipsEl.innerHTML = `
-          <span class="chip ${activeTag === null ? "active" : ""}" data-tag="">
-            All
-          </span>
-          ${tags
-            .map(
-              (t) => `
-            <span class="chip ${activeTag === t ? "active" : ""}" data-tag="${escapeHtml(t)}">
-              #${escapeHtml(t)}
-            </span>
-          `
-            )
-            .join("")}
-        `;
+        if (statTags) statTags.textContent = tags.length;
 
-        chipsEl.querySelectorAll(".chip").forEach((ch) => {
-          ch.addEventListener("click", () => {
-            const t = ch.getAttribute("data-tag");
-            activeTag = t ? t : null;
+        chipsEl.innerHTML = `
+          <span class="chip ${activeTag === null ? 'active' : ''}" data-tag="">All</span>
+          ${tags.map(t =>
+            `<span class="chip ${activeTag === t ? 'active' : ''}" data-tag="${escapeHtml(t)}">${escapeHtml(t)}</span>`
+          ).join('')}`;
+
+        chipsEl.querySelectorAll('.chip').forEach(ch => {
+          ch.addEventListener('click', () => {
+            activeTag = ch.getAttribute('data-tag') || null;
             buildChips();
             filtered();
           });
         });
       }
 
+      /* ── Load ─── */
       async function load() {
-        listEl.innerHTML = `<div class="item">Loading...</div>`;
+        listEl.innerHTML = `<div class="empty"><div class="empty-icon">⟳</div><p>// Loading commands…</p></div>`;
 
         const state = await getSessionAndRole(supabase);
         renderNav(navMount, state);
 
-        const logoutBtn = document.getElementById("navLogout");
+        const logoutBtn = document.getElementById('navLogout');
         if (logoutBtn) {
-          logoutBtn.addEventListener("click", async () => {
+          logoutBtn.addEventListener('click', async () => {
             await supabase.auth.signOut();
             location.reload();
           });
         }
 
         const { data, error } = await supabase
-          .from("commands")
-          .select("slug,title,syntax,tags")
-          .eq("published", true)
-          .order("title", { ascending: true });
+          .from('commands')
+          .select('slug,title,syntax,tags')
+          .eq('published', true)
+          .order('title', { ascending: true });
 
         if (error) {
-          listEl.innerHTML = `<div class="item">Error: ${escapeHtml(
-            error.message
-          )}</div>`;
+          listEl.innerHTML = `<div class="empty"><p>// Error: ${escapeHtml(error.message)}</p></div>`;
           return;
         }
 
         all = data || [];
+        if (statTotal) statTotal.textContent = all.length;
 
         completedSet = new Set();
         if (state.user) {
           const { data: prog, error: progErr } = await supabase
-            .from("progress")
-            .select("command_slug,is_completed")
-            .eq("user_id", state.user.id);
+            .from('progress')
+            .select('command_slug,is_completed')
+            .eq('user_id', state.user.id);
 
           if (!progErr && prog) {
-            prog.forEach((p) => {
+            prog.forEach(p => {
               if (p.is_completed) completedSet.add(String(p.command_slug));
             });
           }
         }
 
+        if (statDone) statDone.textContent = completedSet.size;
+
         buildChips();
         filtered();
       }
 
-      qEl.addEventListener("input", filtered);
-      clearBtn.addEventListener("click", () => {
-        qEl.value = "";
+      qEl.addEventListener('input', filtered);
+      clearBtn.addEventListener('click', () => {
+        qEl.value = '';
         activeTag = null;
         buildChips();
         filtered();
@@ -504,5 +1109,6 @@
 
       load();
     </script>
+
   </body>
 </html>
