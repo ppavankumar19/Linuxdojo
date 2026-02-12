@@ -7,249 +7,330 @@
   <script src="/config.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&display=swap" rel="stylesheet">
   
   <style>
+    /* ══════════════════════════════════════════
+       TOKENS
+    ══════════════════════════════════════════ */
     :root {
-      color-scheme: dark;
-      --bg-primary: linear-gradient(145deg, #050810 0%, #0f1419 30%, #1a0f2e 60%, #0d1b2a 100%);
-      --bg-secondary: rgba(20, 28, 50, 0.45);
-      --bg-tertiary: rgba(35, 48, 70, 0.25);
-      --text-primary: #f8fafc;
-      --text-secondary: #d4d8e0;
-      --text-tertiary: #8b95a8;
-      --accent-primary: #00e5ff;
-      --accent-secondary: #0fb0ff;
-      --accent-tertiary: #6366f1;
-      --accent-success: #10b981;
-      --border-color: rgba(80, 95, 120, 0.18);
-      --border-light: rgba(148, 163, 184, 0.08);
+      --bg:         #07090f;
+      --surface:    #0e1524;
+      --surface2:   #14203a;
+      --ink:        #f4f7ff;
+      --ink2:       #d8e2f4;
+      --ink3:       #a4b8d8;
+      --ink4:       #6e88a8;
+      --lime:       #c9ff47;
+      --lime-dim:   rgba(201,255,71,0.12);
+      --lime-glow:  rgba(201,255,71,0.25);
+      --cyan:       #2efff6;
+      --cyan-dim:   rgba(46,255,246,0.1);
+      --violet:     #b09fff;
+      --violet-dim: rgba(176,159,255,0.12);
+      --amber:      #ffd070;
+      --green:      #52ffa8;
+      --green-dim:  rgba(82,255,168,0.12);
+      --red:        #ff7070;
+      --border:     rgba(255,255,255,0.09);
+      --border2:    rgba(255,255,255,0.16);
+      --border3:    rgba(255,255,255,0.25);
     }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    /* ══════════════════════════════════════════  RESET  */
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
 
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: var(--bg-primary);
-      background-attachment: fixed;
-      color: var(--text-primary);
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
       font-size: 14px;
-      line-height: 1.65;
-      letter-spacing: 0.4px;
-      font-weight: 400;
+      line-height: 1.6;
       min-height: 100vh;
+      overflow-x: hidden;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
     }
 
-    /* Container */
+    a { color:inherit; text-decoration:none; }
+
+    /* ══════════════════════════════════════════  BG LAYERS */
+    body::before {
+      content:'';
+      position:fixed; inset:0;
+      background-image: radial-gradient(rgba(255,255,255,0.07) 1px, transparent 1px);
+      background-size: 28px 28px;
+      pointer-events:none; z-index:0;
+    }
+    body::after {
+      content:'';
+      position:fixed; inset:0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events:none; z-index:0; opacity:0.5;
+    }
+
+    .orb {
+      position:fixed; border-radius:50%;
+      filter:blur(110px);
+      pointer-events:none; z-index:0;
+    }
+    .orb-1 {
+      width:500px; height:500px;
+      background:radial-gradient(circle, rgba(201,255,71,0.075) 0%, transparent 70%);
+      top:-150px; left:-100px;
+      animation:drift1 20s ease-in-out infinite;
+    }
+    .orb-2 {
+      width:450px; height:450px;
+      background:radial-gradient(circle, rgba(46,255,246,0.06) 0%, transparent 70%);
+      bottom:-100px; right:-100px;
+      animation:drift2 26s ease-in-out infinite;
+    }
+    .orb-3 {
+      width:320px; height:320px;
+      background:radial-gradient(circle, rgba(176,159,255,0.07) 0%, transparent 70%);
+      top:50%; left:50%;
+      animation:drift3 17s ease-in-out infinite;
+    }
+
+    @keyframes drift1 {
+      0%,100%{transform:translate(0,0);}
+      40%{transform:translate(70px,50px);}
+      70%{transform:translate(-20px,80px);}
+    }
+    @keyframes drift2 {
+      0%,100%{transform:translate(0,0);}
+      50%{transform:translate(-60px,-70px);}
+    }
+    @keyframes drift3 {
+      0%,100%{transform:translate(-50%,-50%) scale(1);}
+      50%{transform:translate(-50%,-50%) scale(1.25);}
+    }
+
+    /* ══════════════════════════════════════════  CONTAINER */
     .container {
-      max-width: 900px;
+      max-width: 520px;
       margin: 0 auto;
-      padding: 32px 18px;
+      padding: 64px 28px;
       width: 100%;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       text-align: center;
+      position: relative;
+      z-index: 1;
     }
 
-    /* Typography */
+    /* ══════════════════════════════════════════  HEADER */
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 5px;
+      border: 1px solid rgba(201,255,71,0.38);
+      background: rgba(201,255,71,0.08);
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--lime);
+      margin-bottom: 20px;
+    }
+
+    .eyebrow-dot {
+      width: 6px; height: 6px;
+      background: var(--lime);
+      border-radius: 50%;
+      flex-shrink: 0;
+      animation: pulseDot 2s ease-in-out infinite;
+    }
+
+    @keyframes pulseDot {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(0.7); }
+    }
+
     h1 {
-      font-size: 42px;
-      font-weight: 950;
-      margin: 0 0 16px;
-      line-height: 1.15;
-      letter-spacing: -0.8px;
-      background: linear-gradient(135deg, #ffffff 0%, var(--text-secondary) 40%, var(--accent-primary) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      font-family: 'Syne', sans-serif;
+      font-size: 48px;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -2px;
+      color: var(--ink);
+      margin-bottom: 32px;
     }
 
-    /* Card */
+    h1 .hl { color: var(--lime); }
+
+    /* ══════════════════════════════════════════  CARD */
     .card {
-      border: 1.2px solid var(--border-color);
-      border-radius: 16px;
-      background: rgba(20, 28, 50, 0.45);
-      backdrop-filter: blur(5px);
-      padding: 36px;
-      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-      max-width: 480px;
-      margin-top: 24px;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 18px;
+      padding: 40px 32px;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp 0.6s ease-out;
+      width: 100%;
+      max-width: 460px;
     }
 
-    .card:hover {
-      background: rgba(30, 41, 59, 0.55);
-      border-color: rgba(0, 229, 255, 0.12);
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Message */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg,
+        var(--lime) 0%, var(--cyan) 40%,
+        var(--violet) 75%, var(--lime) 100%);
+      background-size: 200% 100%;
+      animation: shimmerBar 4s linear infinite;
+    }
+
+    @keyframes shimmerBar {
+      0% { background-position: 0%; }
+      100% { background-position: 200%; }
+    }
+
+    /* ══════════════════════════════════════════  SPINNER */
+    .spinner {
+      display: inline-block;
+      width: 60px;
+      height: 60px;
+      border: 3px solid var(--border2);
+      border-top: 3px solid var(--lime);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 24px;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* ══════════════════════════════════════════  MESSAGE */
     #msg {
-      color: var(--text-secondary);
+      font-family: 'Space Mono', monospace;
+      color: var(--ink2);
       font-size: 14px;
-      font-weight: 400;
-      letter-spacing: 0.35px;
-      opacity: 0.95;
+      font-weight: 500;
+      letter-spacing: 0.5px;
       line-height: 1.7;
     }
 
     #msg b {
-      color: var(--accent-success);
-      font-weight: 600;
+      color: var(--lime);
+      font-weight: 700;
     }
 
-    /* Loading Animation */
-    .spinner {
-      display: inline-block;
-      width: 40px;
-      height: 40px;
-      border: 3px solid rgba(0, 229, 255, 0.2);
-      border-top: 3px solid var(--accent-primary);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      margin-bottom: 20px;
-    }
-
-    @keyframes spin {
-      from {
-        transform: rotate(0deg);
-      }
-      to {
-        transform: rotate(360deg);
-      }
-    }
-
-    /* Animated Dots */
-    .loading-text {
-      display: inline-block;
-      margin-top: 16px;
-      font-size: 14px;
-      font-weight: 500;
-      letter-spacing: 0.3px;
-      color: var(--text-secondary);
-    }
-
+    /* Loading dots */
     .dot {
       display: inline-block;
       animation: blink 1.4s infinite;
       margin: 0 2px;
+      color: var(--lime);
     }
 
-    .dot:nth-child(2) {
-      animation-delay: 0.2s;
-    }
-
-    .dot:nth-child(3) {
-      animation-delay: 0.4s;
-    }
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
 
     @keyframes blink {
-      0%, 60%, 100% {
-        opacity: 0.3;
-      }
-      30% {
-        opacity: 1;
-      }
+      0%, 60%, 100% { opacity: 0.3; }
+      30% { opacity: 1; }
     }
 
-    /* Status Badge */
+    /* ══════════════════════════════════════════  STATUS BADGE */
     .status-badge {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      padding: 12px 16px;
-      border-radius: 12px;
-      background: rgba(99, 102, 241, 0.1);
-      border: 1px solid rgba(99, 102, 241, 0.2);
-      color: var(--accent-tertiary);
-      font-weight: 500;
-      margin-top: 20px;
-      letter-spacing: 0.3px;
+      gap: 10px;
+      padding: 14px 20px;
+      border-radius: 10px;
+      background: var(--violet-dim);
+      border: 1px solid rgba(176,159,255,0.35);
+      color: var(--violet);
+      font-family: 'Space Mono', monospace;
+      font-weight: 600;
+      font-size: 13px;
+      margin-top: 24px;
+      letter-spacing: 0.5px;
+      transition: all 0.3s ease;
     }
 
     .status-badge.success {
-      background: rgba(16, 185, 129, 0.1);
-      border-color: rgba(16, 185, 129, 0.2);
-      color: var(--accent-success);
+      background: var(--green-dim);
+      border-color: rgba(82,255,168,0.45);
+      color: var(--green);
+      box-shadow: 0 0 20px rgba(82,255,168,0.15);
     }
 
-    /* Animation */
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    .status-badge .icon {
+      font-size: 18px;
+      line-height: 1;
     }
 
-    .card {
-      animation: fadeIn 0.6s ease-out;
-    }
-
-    /* Scrollbar */
-    ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
-    }
-
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background: rgba(71, 85, 105, 0.4);
-      border-radius: 4px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-      background: rgba(71, 85, 105, 0.6);
-    }
-
-    /* Responsive */
+    /* ══════════════════════════════════════════  RESPONSIVE */
     @media (max-width: 640px) {
+      .container {
+        padding: 48px 20px;
+      }
+
       h1 {
-        font-size: 32px;
-        margin-bottom: 12px;
+        font-size: 38px;
       }
 
       .card {
-        padding: 24px;
-        max-width: 100%;
+        padding: 32px 24px;
       }
 
       .spinner {
-        width: 36px;
-        height: 36px;
-        border-width: 2.5px;
+        width: 50px;
+        height: 50px;
       }
     }
+
+    /* ══════════════════════════════════════════  SCROLLBAR */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(201,255,71,0.2); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(201,255,71,0.38); }
   </style>
 </head>
 
 <body>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
   <div class="container">
-    <h1>Signing You In</h1>
+    <div class="eyebrow">
+      <span class="eyebrow-dot"></span>
+      Authentication
+    </div>
+
+    <h1>Signing <span class="hl">You</span> In</h1>
     
     <div class="card">
       <div class="spinner"></div>
       
-      <div id="msg" class="loading-text">
+      <div id="msg">
         Finalizing login<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>
       </div>
       
       <div class="status-badge" id="status-badge" style="display: none;">
-        <span>✓</span>
+        <span class="icon">✓</span>
         <span id="status-text">Authenticated</span>
       </div>
     </div>
@@ -270,19 +351,27 @@
       const { data: { session } } = await supabase.auth.getSession();
 
       if (!session?.user) {
-        msgEl.innerHTML = `<span style="color:var(--accent-primary);">Login not detected.</span><br>Try again from <b>/login.html</b>`;
+        msgEl.innerHTML = `<span style="color:var(--cyan);">Login not detected.</span><br><br>Try again from <b>/login.html</b>`;
         statusBadge.style.display = "none";
+        document.querySelector('.spinner').style.display = "none";
         return;
       }
 
       // Show success state
-      msgEl.innerHTML = `<span>Welcome back</span>`;
+      msgEl.innerHTML = `<span style="color:var(--green);">Welcome back!</span>`;
       statusBadge.classList.add("success");
       statusBadge.style.display = "inline-flex";
       statusText.textContent = session.user.email || session.user.id;
-
+      
+      // Hide spinner
+      document.querySelector('.spinner').style.borderTopColor = "var(--green)";
+      
       // Redirect after brief delay
-      setTimeout(() => (window.location.href = "/"), 1200);
+      setTimeout(() => {
+        msgEl.innerHTML = `<span style="color:var(--lime);">Redirecting to dashboard...</span>`;
+      }, 800);
+      
+      setTimeout(() => (window.location.href = "/"), 1500);
     }
 
     go();

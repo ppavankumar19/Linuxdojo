@@ -7,296 +7,357 @@
   <script src="/config.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&display=swap" rel="stylesheet">
   
   <style>
+    /* ══════════════════════════════════════════
+       TOKENS
+    ══════════════════════════════════════════ */
     :root {
-      color-scheme: dark;
-      --bg-primary: linear-gradient(145deg, #050810 0%, #0f1419 30%, #1a0f2e 60%, #0d1b2a 100%);
-      --bg-secondary: rgba(20, 28, 50, 0.45);
-      --bg-tertiary: rgba(35, 48, 70, 0.25);
-      --text-primary: #f8fafc;
-      --text-secondary: #d4d8e0;
-      --text-tertiary: #8b95a8;
-      --accent-primary: #00e5ff;
-      --accent-secondary: #0fb0ff;
-      --accent-tertiary: #6366f1;
-      --accent-success: #10b981;
-      --accent-danger: #ef4444;
-      --border-color: rgba(80, 95, 120, 0.18);
-      --border-light: rgba(148, 163, 184, 0.08);
+      --bg:         #07090f;
+      --surface:    #0e1524;
+      --surface2:   #14203a;
+      --ink:        #f4f7ff;
+      --ink2:       #d8e2f4;
+      --ink3:       #a4b8d8;
+      --ink4:       #6e88a8;
+      --lime:       #c9ff47;
+      --lime-dim:   rgba(201,255,71,0.12);
+      --lime-glow:  rgba(201,255,71,0.25);
+      --cyan:       #2efff6;
+      --cyan-dim:   rgba(46,255,246,0.1);
+      --violet:     #b09fff;
+      --violet-dim: rgba(176,159,255,0.12);
+      --amber:      #ffd070;
+      --green:      #52ffa8;
+      --green-dim:  rgba(82,255,168,0.12);
+      --red:        #ff7070;
+      --red-dim:    rgba(255,112,112,0.12);
+      --border:     rgba(255,255,255,0.09);
+      --border2:    rgba(255,255,255,0.16);
+      --border3:    rgba(255,255,255,0.25);
     }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    /* ══════════════════════════════════════════  RESET  */
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
 
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: var(--bg-primary);
-      background-attachment: fixed;
-      color: var(--text-primary);
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
       font-size: 14px;
-      line-height: 1.65;
-      letter-spacing: 0.4px;
-      font-weight: 400;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
     }
 
-    a {
-      color: inherit;
-      text-decoration: none;
+    a { color:inherit; text-decoration:none; }
+
+    /* ══════════════════════════════════════════  BG LAYERS */
+    body::before {
+      content:'';
+      position:fixed; inset:0;
+      background-image: radial-gradient(rgba(255,255,255,0.07) 1px, transparent 1px);
+      background-size: 28px 28px;
+      pointer-events:none; z-index:0;
+    }
+    body::after {
+      content:'';
+      position:fixed; inset:0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events:none; z-index:0; opacity:0.5;
     }
 
-    /* Navigation */
+    .orb {
+      position:fixed; border-radius:50%;
+      filter:blur(110px);
+      pointer-events:none; z-index:0;
+    }
+    .orb-1 {
+      width:600px; height:600px;
+      background:radial-gradient(circle, rgba(201,255,71,0.075) 0%, transparent 70%);
+      top:-200px; left:-150px;
+      animation:drift1 20s ease-in-out infinite;
+    }
+    .orb-2 {
+      width:500px; height:500px;
+      background:radial-gradient(circle, rgba(46,255,246,0.06) 0%, transparent 70%);
+      bottom:-120px; right:-120px;
+      animation:drift2 26s ease-in-out infinite;
+    }
+
+    @keyframes drift1 {
+      0%,100%{transform:translate(0,0);}
+      40%{transform:translate(70px,50px);}
+      70%{transform:translate(-20px,80px);}
+    }
+    @keyframes drift2 {
+      0%,100%{transform:translate(0,0);}
+      50%{transform:translate(-60px,-70px);}
+    }
+
+    /* ══════════════════════════════════════════  NAV */
     .nav {
-      position: sticky;
-      top: 0;
-      backdrop-filter: blur(14px);
-      background: rgba(5, 8, 16, 0.65);
-      border-bottom: 1px solid rgba(0, 229, 255, 0.06);
-      z-index: 10;
+      position:sticky; top:0; z-index:200;
+      background:rgba(7,9,15,0.86);
+      backdrop-filter:blur(24px) saturate(1.7);
+      -webkit-backdrop-filter:blur(24px) saturate(1.7);
+      border-bottom:1px solid var(--border2);
+    }
+
+    .nav::after {
+      content:'';
+      position:absolute;
+      bottom:-1px; left:0; right:0;
+      height:1px;
+      background:linear-gradient(90deg,
+        transparent 0%,
+        rgba(201,255,71,0.55) 25%,
+        rgba(46,255,246,0.45) 55%,
+        rgba(176,159,255,0.4) 80%,
+        transparent 100%);
+      background-size:200% 100%;
+      animation:navLine 5s linear infinite;
+    }
+
+    @keyframes navLine {
+      0%{background-position:0%;}
+      100%{background-position:200%;}
     }
 
     .navin {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 16px 18px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
+      max-width:1120px;
+      margin:0 auto;
+      padding:0 28px;
+      height:62px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
     }
 
+    /* Brand — typewriter */
     .brand {
-      font-weight: 950;
+      font-family:'Space Mono', monospace;
+      font-weight:700;
+      font-size:17px;
+      letter-spacing:3px;
+      text-transform:uppercase;
+      display:flex;
+      align-items:center;
+      user-select:none;
+    }
+
+    .brand-dollar {
+      color:var(--cyan);
+      margin-right:8px;
+      opacity:0.9;
+    }
+
+    #brandText { color:var(--lime); }
+
+    .brand-cursor {
+      display:inline-block;
+      width:9px; height:17px;
+      background:var(--lime);
+      margin-left:3px;
+      vertical-align:middle;
+      border-radius:1px;
+      animation:blink 1s step-end infinite;
+    }
+
+    @keyframes blink {
+      0%,100%{opacity:1;}
+      50%{opacity:0;}
+    }
+
+    .nav-links {
+      display:flex;
+      gap:10px;
+    }
+
+    /* ══════════════════════════════════════════  BUTTONS */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 9px 18px;
+      border-radius: 8px;
+      border: 1px solid var(--border3);
+      background: transparent;
+      color: var(--ink2);
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
       letter-spacing: 1.2px;
-      font-size: 19px;
       text-transform: uppercase;
-      background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 50%, var(--accent-tertiary) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background .22s ease, border-color .22s ease,
+                 color .22s ease, box-shadow .22s ease, transform .18s ease;
     }
 
-    /* Container */
+    .btn:hover {
+      background: rgba(201,255,71,0.1);
+      border-color: var(--lime);
+      color: var(--lime);
+      box-shadow: 0 0 20px rgba(201,255,71,0.18), inset 0 1px 0 rgba(201,255,71,0.1);
+      transform: translateY(-2px);
+    }
+    .btn:active { transform: translateY(0); }
+
+    .btn.primary {
+      border: 1px solid rgba(201,255,71,0.45);
+      background: var(--lime-dim);
+      color: var(--lime);
+      padding: 11px 24px;
+      font-size: 12px;
+      letter-spacing: 1.5px;
+    }
+
+    .btn.primary:hover {
+      background: var(--lime);
+      border-color: var(--lime);
+      color: #080c00;
+      box-shadow: 0 0 26px var(--lime-glow), 0 4px 18px rgba(0,0,0,0.35);
+    }
+
+    .btn.danger {
+      border-color: rgba(255,112,112,0.35);
+      background: var(--red-dim);
+      color: var(--red);
+    }
+
+    .btn.danger:hover {
+      background: rgba(255,112,112,0.2);
+      border-color: var(--red);
+      color: var(--red);
+      box-shadow: 0 0 20px rgba(255,112,112,0.2);
+    }
+
+    /* ══════════════════════════════════════════  CONTAINER */
     .container {
-      max-width: 1100px;
+      max-width: 1120px;
       margin: 0 auto;
-      padding: 32px 18px;
+      padding: 64px 28px 96px;
+      position: relative;
+      z-index: 1;
     }
 
-    /* Grid & Cards */
+    /* ══════════════════════════════════════════  GRID */
     .grid {
       display: grid;
-      gap: 14px;
+      gap: 20px;
       grid-template-columns: repeat(12, 1fr);
     }
 
     .card {
       grid-column: span 12;
-      border: 1.2px solid var(--border-color);
-      border-radius: 16px;
-      background: rgba(20, 28, 50, 0.45);
-      backdrop-filter: blur(5px);
-      padding: 24px;
-      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 18px;
+      padding: 32px;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp 0.6s ease-out;
     }
 
-    .card:hover {
-      background: rgba(30, 41, 59, 0.55);
-      border-color: rgba(0, 229, 255, 0.12);
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg,
+        var(--lime) 0%, var(--cyan) 40%,
+        var(--violet) 75%, var(--lime) 100%);
+      background-size: 200% 100%;
+      animation: shimmerBar 4s linear infinite;
+    }
+
+    @keyframes shimmerBar {
+      0% { background-position: 0%; }
+      100% { background-position: 200%; }
     }
 
     @media(min-width: 900px) {
-      .card.left {
-        grid-column: span 5;
-      }
-      .card.right {
-        grid-column: span 7;
-      }
+      .card.left { grid-column: span 5; }
+      .card.right { grid-column: span 7; }
     }
 
-    /* Buttons */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 11px 18px;
-      border-radius: 10px;
-      border: 1.2px solid var(--border-color);
-      background: rgba(25, 35, 55, 0.5);
-      color: var(--text-primary);
-      cursor: pointer;
-      font-weight: 550;
-      font-size: 13px;
-      letter-spacing: 0.3px;
-      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-      font-family: 'Inter', sans-serif;
-    }
-
-    .btn:hover {
-      background: rgba(40, 55, 80, 0.65);
-      border-color: var(--accent-secondary);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(15, 176, 255, 0.1);
-    }
-
-    .btn.primary {
-      background: linear-gradient(135deg, var(--accent-success) 0%, #0d9668 100%);
-      color: #071018;
-      border-color: transparent;
-      font-weight: 700;
-    }
-
-    .btn.primary:hover {
-      background: linear-gradient(135deg, #13d48f 0%, #10b981 100%);
-      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
-    }
-
-    .btn.danger {
-      background: linear-gradient(135deg, var(--accent-danger) 0%, #dc2626 100%);
-      color: #0b1220;
-      border-color: transparent;
-      font-weight: 700;
-    }
-
-    .btn.danger:hover {
-      background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
-      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
-    }
-
-    /* Typography */
-    .small {
-      color: var(--text-tertiary);
-      font-size: 13px;
-      font-weight: 400;
-      letter-spacing: 0.35px;
-      opacity: 0.95;
-    }
-
+    /* ══════════════════════════════════════════  TYPOGRAPHY */
     .title {
-      font-weight: 750;
-      font-size: 16px;
-      color: var(--text-primary);
-      letter-spacing: -0.1px;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 20px;
+      color: var(--ink);
+      letter-spacing: -0.5px;
     }
 
-    /* Form Elements */
-    .input {
-      width: 100%;
-      padding: 15px 20px;
-      border-radius: 12px;
-      border: 1.5px solid var(--border-color);
-      background: rgba(20, 28, 50, 0.35);
-      color: var(--text-primary);
-      font-family: 'Inter', sans-serif;
-      font-size: 14px;
+    .small {
+      color: var(--ink3);
+      font-size: 13px;
       font-weight: 400;
       letter-spacing: 0.3px;
-      outline: none;
-      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-      backdrop-filter: blur(2px);
     }
 
-    .input::placeholder {
-      color: var(--text-tertiary);
-      font-weight: 400;
+    .muted { opacity: 0.7; }
+
+    /* ══════════════════════════════════════════  FORM */
+    .form-group {
+      margin-top: 20px;
     }
 
-    .input:focus {
-      border-color: var(--accent-primary);
-      background: rgba(20, 28, 50, 0.55);
-      box-shadow: 0 0 0 4px rgba(0, 229, 255, 0.12), inset 0 0 0 1px rgba(0, 229, 255, 0.08);
-    }
-
-    textarea.input {
-      font-family: 'Geist Mono', monospace;
-      resize: vertical;
-      font-size: 13px;
-    }
-
-    /* Badges */
-    .badge {
-      display: inline-block;
-      padding: 7px 11px;
-      border-radius: 8px;
-      border: 1px solid var(--border-color);
+    .form-label {
+      font-family: 'Space Mono', monospace;
       font-size: 11px;
-      color: var(--text-tertiary);
-      font-weight: 550;
-      font-family: 'Geist Mono', monospace;
-      background: rgba(25, 35, 55, 0.5);
-      letter-spacing: 0.35px;
-      backdrop-filter: blur(1px);
-    }
-
-    .badge[style*="border-color: #22c55e"],
-    .badge[style*="border-color: #10b981"],
-    .badge[style*="border-color: #0d9668"] {
-      border-color: var(--accent-success) !important;
-      background: rgba(16, 185, 129, 0.1) !important;
-      color: var(--accent-success) !important;
-    }
-
-    /* Layout Utilities */
-    .row {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    .split {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      align-items: flex-start;
-      flex-wrap: wrap;
-    }
-
-    /* List */
-    .list {
-      display: grid;
-      gap: 12px;
-      margin-top: 16px;
-    }
-
-    .item {
-      padding: 18px;
-      border: 1.2px solid var(--border-color);
-      border-radius: 14px;
-      background: rgba(20, 28, 50, 0.45);
-      backdrop-filter: blur(4px);
-      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .item:hover {
-      background: rgba(30, 41, 59, 0.65);
-      border-color: var(--accent-primary);
-      box-shadow: 0 8px 24px rgba(0, 229, 255, 0.08);
-    }
-
-    /* Media */
-    iframe,
-    video {
-      border: 0;
-      width: 100%;
-      height: 260px;
-      border-radius: 14px;
-      background: rgba(10, 14, 39, 0.5);
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--ink2);
+      margin-bottom: 8px;
       display: block;
     }
 
-    .muted {
-      opacity: 0.75;
+    .input {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border2);
+      background: rgba(0,0,0,0.3);
+      color: var(--ink);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      outline: none;
+      transition: all 0.25s ease;
     }
 
-    /* Checkbox styling */
+    .input::placeholder {
+      color: var(--ink4);
+      font-style: italic;
+    }
+
+    .input:focus {
+      border-color: var(--lime);
+      background: rgba(0,0,0,0.5);
+      box-shadow: 0 0 0 3px rgba(201,255,71,0.1);
+    }
+
+    textarea.input {
+      font-family: 'Space Mono', monospace;
+      font-size: 13px;
+      resize: vertical;
+      line-height: 1.6;
+    }
+
     input[type="checkbox"] {
       cursor: pointer;
-      accent-color: var(--accent-primary);
+      accent-color: var(--lime);
       width: 18px;
       height: 18px;
     }
@@ -306,99 +367,190 @@
       align-items: center;
       gap: 8px;
       cursor: pointer;
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink2);
     }
 
-    /* Form Message */
-    #formMsg {
-      margin-top: 16px;
-      font-weight: 500;
-      color: var(--accent-success);
-      letter-spacing: 0.3px;
-      padding: 12px 14px;
-      border-radius: 12px;
-      background: rgba(16, 185, 129, 0.1);
-      border: 1px solid rgba(16, 185, 129, 0.2);
+    /* ══════════════════════════════════════════  BADGES */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      font-weight: 600;
+      border: 1px solid var(--border2);
+      background: rgba(255,255,255,0.06);
+      color: var(--ink2);
     }
 
-    #formMsg:empty {
-      display: none;
+    .badge.published {
+      border-color: rgba(82,255,168,0.45);
+      background: var(--green-dim);
+      color: var(--green);
     }
 
-    /* Animation */
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    .badge.draft {
+      border-color: rgba(176,159,255,0.35);
+      background: var(--violet-dim);
+      color: var(--violet);
     }
 
-    .item,
-    .card {
+    .badge.admin {
+      border-color: rgba(201,255,71,0.45);
+      background: var(--lime-dim);
+      color: var(--lime);
+    }
+
+    /* ══════════════════════════════════════════  LAYOUT */
+    .split {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    /* ══════════════════════════════════════════  LIST */
+    .list {
+      display: grid;
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .item {
+      padding: 20px;
+      border: 1px solid var(--border2);
+      border-radius: 14px;
+      background: rgba(0,0,0,0.3);
+      transition: all 0.25s ease;
       animation: fadeIn 0.4s ease-out;
     }
 
-    /* Scrollbar */
-    ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    ::-webkit-scrollbar-track {
-      background: transparent;
+    .item:hover {
+      background: rgba(0,0,0,0.5);
+      border-color: var(--border3);
     }
 
-    ::-webkit-scrollbar-thumb {
-      background: rgba(71, 85, 105, 0.4);
-      border-radius: 4px;
+    /* ══════════════════════════════════════════  MEDIA */
+    iframe,
+    video {
+      border: 0;
+      width: 100%;
+      height: 300px;
+      border-radius: 12px;
+      background: #000;
+      display: block;
+      border: 1px solid var(--border);
     }
 
-    ::-webkit-scrollbar-thumb:hover {
-      background: rgba(71, 85, 105, 0.6);
+    /* ══════════════════════════════════════════  MESSAGE */
+    #formMsg {
+      margin-top: 16px;
+      padding: 14px 18px;
+      border-radius: 10px;
+      background: var(--green-dim);
+      border: 1px solid rgba(82,255,168,0.45);
+      color: var(--green);
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      font-weight: 600;
     }
 
-    /* Responsive */
-    @media (max-width: 768px) {
-      .split {
-        flex-direction: column;
-        align-items: flex-start;
+    #formMsg:empty { display: none; }
+
+    #formMsg.error {
+      background: var(--red-dim);
+      border-color: rgba(255,112,112,0.45);
+      color: var(--red);
+    }
+
+    /* ══════════════════════════════════════════  RESPONSIVE */
+    @media (max-width: 900px) {
+      .card.left, .card.right {
+        grid-column: span 12 !important;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .container {
+        padding: 48px 20px 72px;
       }
 
-      .card.left,
-      .card.right {
-        grid-column: span 12 !important;
+      .navin {
+        padding: 0 20px;
+      }
+
+      .brand {
+        font-size: 14px;
+        letter-spacing: 2px;
+      }
+
+      .card {
+        padding: 24px;
+      }
+
+      .split {
+        flex-direction: column;
       }
 
       .row {
         flex-direction: column;
+        width: 100%;
       }
 
       .row > * {
         width: 100%;
       }
     }
+
+    /* ══════════════════════════════════════════  SCROLLBAR */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(201,255,71,0.2); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(201,255,71,0.38); }
   </style>
 </head>
 
 <body>
-  <div class="nav">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <!-- NAV -->
+  <nav class="nav">
     <div class="navin">
-      <div class="brand">🛠 Admin • LinuxDojo</div>
-      <div class="row">
+      <a href="/" class="brand">
+        <span class="brand-dollar">$&nbsp;</span>
+        <span id="brandText"></span>
+        <span class="brand-cursor"></span>
+      </a>
+      <div class="nav-links">
         <a class="btn" href="/">Home</a>
         <a class="btn" href="/login.html">Login</a>
         <button id="btnLogout" class="btn">Logout</button>
       </div>
     </div>
-  </div>
+  </nav>
 
   <div class="container">
     <div id="gate" class="card">
       <div class="title">Checking access...</div>
-      <div class="small" id="gateMsg">Please wait</div>
+      <div class="small" id="gateMsg" style="margin-top:12px;">Please wait</div>
     </div>
 
     <div id="app" class="grid" style="display:none;">
@@ -406,40 +558,56 @@
         <div class="split">
           <div>
             <div class="title" id="formTitle">Create Command</div>
-            <div class="small">Fields marked required must be filled.</div>
+            <div class="small" style="margin-top:8px;">Fields marked required must be filled</div>
           </div>
-          <span class="badge" id="roleBadge">admin</span>
+          <span class="badge admin">ADMIN</span>
         </div>
 
-        <form id="form" style="margin-top:20px;">
+        <form id="form" style="margin-top:28px;">
           <input type="hidden" id="editingId" value="" />
 
-          <div class="small" style="margin-top:16px;font-weight:550;">Title (required)</div>
-          <input class="input" id="title" placeholder="e.g. cd" required />
+          <div class="form-group">
+            <label class="form-label">Title (required)</label>
+            <input class="input" id="title" placeholder="e.g. cd" required />
+          </div>
 
-          <div class="small" style="margin-top:16px;font-weight:550;">Slug (required, unique)</div>
-          <input class="input" id="slug" placeholder="e.g. cd" required />
+          <div class="form-group">
+            <label class="form-label">Slug (required, unique)</label>
+            <input class="input" id="slug" placeholder="e.g. cd" required />
+          </div>
 
-          <div class="small" style="margin-top:16px;font-weight:550;">Syntax (required)</div>
-          <input class="input" id="syntax" placeholder="e.g. cd [path]" required />
+          <div class="form-group">
+            <label class="form-label">Syntax (required)</label>
+            <input class="input" id="syntax" placeholder="e.g. cd [path]" required />
+          </div>
 
-          <div class="small" style="margin-top:16px;font-weight:550;">Description (required)</div>
-          <textarea class="input" id="description" rows="5" required placeholder="Explain what it does..."></textarea>
+          <div class="form-group">
+            <label class="form-label">Description (required)</label>
+            <textarea class="input" id="description" rows="5" required placeholder="Explain what it does..."></textarea>
+          </div>
 
-          <div class="small" style="margin-top:16px;font-weight:550;">Asciinema URL (required)</div>
-          <input class="input" id="asciinema_url" required placeholder="https://asciinema.org/a/xxxxx" />
+          <div class="form-group">
+            <label class="form-label">Asciinema URL (required)</label>
+            <input class="input" id="asciinema_url" required placeholder="https://asciinema.org/a/xxxxx" />
+          </div>
 
-          <div class="small" style="margin-top:16px;font-weight:550;">Video URL (required, any URL)</div>
-          <input class="input" id="video_url" required placeholder="YouTube / Vimeo / NotebookLM / any URL" />
+          <div class="form-group">
+            <label class="form-label">Video URL (required)</label>
+            <input class="input" id="video_url" required placeholder="YouTube / Vimeo / NotebookLM / any URL" />
+          </div>
 
-          <div class="small" style="margin-top:16px;font-weight:550;">Tags (optional, comma separated)</div>
-          <input class="input" id="tags" placeholder="filesystem, navigation" />
+          <div class="form-group">
+            <label class="form-label">Tags (optional, comma separated)</label>
+            <input class="input" id="tags" placeholder="filesystem, navigation" />
+          </div>
 
-          <div class="small" style="margin-top:16px;font-weight:550;">Lesson Steps (optional, one per line)</div>
-          <textarea class="input" id="lesson_steps" rows="5" placeholder="pwd&#10;ls&#10;cd .."></textarea>
+          <div class="form-group">
+            <label class="form-label">Lesson Steps (optional, one per line)</label>
+            <textarea class="input" id="lesson_steps" rows="5" placeholder="pwd&#10;ls&#10;cd .."></textarea>
+          </div>
 
-          <div class="row" style="justify-content:space-between;margin-top:20px;">
-            <label class="small" style="font-weight:550;color:var(--text-secondary);">
+          <div class="row" style="justify-content:space-between;margin-top:24px;">
+            <label>
               <input type="checkbox" id="published" />
               Published
             </label>
@@ -456,19 +624,19 @@
 
       <div class="card right">
         <div class="title">Live Preview</div>
-        <div class="small muted">Asciinema normalized to iframe; Video tries embed + always shows open link.</div>
+        <div class="small muted" style="margin-top:8px;">Asciinema normalized to iframe; Video tries embed + always shows open link</div>
 
-        <div style="margin-top:20px;">
-          <div class="small" style="font-weight:550;margin-bottom:10px;">Asciinema Preview</div>
+        <div style="margin-top:24px;">
+          <div class="small" style="font-weight:600;margin-bottom:12px;font-family:'Space Mono',monospace;text-transform:uppercase;letter-spacing:1.5px;color:var(--ink2);">Asciinema Preview</div>
           <div id="asciBox" class="item"></div>
         </div>
 
-        <div style="margin-top:20px;">
-          <div class="small" style="font-weight:550;margin-bottom:10px;">Video Preview</div>
+        <div style="margin-top:24px;">
+          <div class="small" style="font-weight:600;margin-bottom:12px;font-family:'Space Mono',monospace;text-transform:uppercase;letter-spacing:1.5px;color:var(--ink2);">Video Preview</div>
           <div id="vidBox" class="item"></div>
         </div>
 
-        <div style="margin-top:24px;" class="split">
+        <div style="margin-top:32px;" class="split">
           <div class="title">Commands</div>
           <button class="btn" id="btnReload">Reload</button>
         </div>
@@ -477,6 +645,26 @@
       </div>
     </div>
   </div>
+
+  <!-- ════════════════════════════════ SCRIPTS ════ -->
+  <script>
+    /* ── Terminal typewriter for brand ─────────────── */
+    (function() {
+      const WORD  = 'LinuxDojo';
+      const el    = document.getElementById('brandText');
+      let i = 0;
+
+      function type() {
+        if (i < WORD.length) {
+          el.textContent += WORD[i];
+          i++;
+          setTimeout(type, 80 + Math.random() * 80);
+        }
+      }
+
+      setTimeout(type, 400);
+    })();
+  </script>
 
   <script type="module">
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
@@ -554,18 +742,18 @@
       const vid = normalizeVideo(vidEl.value);
 
       asciBox.innerHTML = asci.includes("asciinema.org/a/") && asci.includes("/iframe")
-        ? `<iframe src="${asci}"></iframe><div class="small" style="margin-top:12px;">${escapeHtml(asci)}</div>`
+        ? `<iframe src="${asci}"></iframe><div class="small" style="margin-top:12px;font-family:'Space Mono',monospace;">${escapeHtml(asci)}</div>`
         : `<div class="small">Paste Asciinema link like https://asciinema.org/a/xxxxx</div>`;
 
       if (!vid) {
-        vidBox.innerHTML = `<div class="small">Paste any video URL to preview.</div>`;
+        vidBox.innerHTML = `<div class="small">Paste any video URL to preview</div>`;
       } else if (isDirectVideo(vid)) {
         vidBox.innerHTML = `<video controls src="${vid}"></video>
-          <div class="small" style="margin-top:12px;"><a href="${vid}" target="_blank" style="color:var(--accent-primary);">Open video ↗</a></div>`;
+          <div class="small" style="margin-top:12px;"><a href="${vid}" target="_blank" style="color:var(--cyan);text-decoration:underline;">Open video ↗</a></div>`;
       } else {
         vidBox.innerHTML = `<iframe src="${vid}" allowfullscreen></iframe>
-          <div class="small" style="margin-top:12px;"><a href="${vid}" target="_blank" style="color:var(--accent-primary);">Open video ↗</a></div>
-          <div class="small muted" style="margin-top:8px;">If iframe is blocked by provider, Open video will still work.</div>`;
+          <div class="small" style="margin-top:12px;"><a href="${vid}" target="_blank" style="color:var(--cyan);text-decoration:underline;">Open video ↗</a></div>
+          <div class="small muted" style="margin-top:8px;">If iframe is blocked, Open video will still work</div>`;
       }
     }
 
@@ -574,7 +762,7 @@
     async function gatekeep() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.user) {
-        gateMsg.innerHTML = `Not logged in. <a href="/login.html" style="color:var(--accent-primary);">Go to login</a>`;
+        gateMsg.innerHTML = `Not logged in. <a href="/login.html" style="color:var(--cyan);text-decoration:underline;">Go to login</a>`;
         return;
       }
 
@@ -590,8 +778,7 @@
       }
 
       if (prof.role !== "admin") {
-        gateMsg.innerHTML = `You are logged in as <b>${escapeHtml(prof.email||"")}</b> but not admin.
-          Ask admin to promote you.`;
+        gateMsg.innerHTML = `You are logged in as <b>${escapeHtml(prof.email||"")}</b> but not admin. Ask admin to promote you.`;
         return;
       }
 
@@ -615,6 +802,7 @@
       editingId.value = "";
       formTitle.textContent = "Create Command";
       formMsg.textContent = "";
+      formMsg.classList.remove('error');
       titleEl.value = "";
       slugEl.value = "";
       syntaxEl.value = "";
@@ -640,7 +828,7 @@
       }
 
       if (!data?.length) {
-        listEl.innerHTML = `<div class="item small">No commands yet.</div>`;
+        listEl.innerHTML = `<div class="item small">No commands yet</div>`;
         return;
       }
 
@@ -648,12 +836,12 @@
         <div class="item">
           <div class="split">
             <div>
-              <div class="title">${escapeHtml(c.title)} ${c.published ? `<span class="badge">published</span>` : `<span class="badge">draft</span>`}</div>
-              <div class="small" style="margin-top:8px;">
+              <div class="title">${escapeHtml(c.title)} ${c.published ? `<span class="badge published">published</span>` : `<span class="badge draft">draft</span>`}</div>
+              <div class="small" style="margin-top:10px;">
                 <span class="badge">${escapeHtml(c.syntax)}</span>
                 <span class="badge">/${escapeHtml(c.slug)}</span>
               </div>
-              <div class="small muted" style="margin-top:8px;">Updated: ${escapeHtml(c.updated_at)}</div>
+              <div class="small muted" style="margin-top:8px;font-family:'Space Mono',monospace;font-size:11px;">Updated: ${escapeHtml(c.updated_at)}</div>
             </div>
             <div class="row">
               <a class="btn" href="/command.html?slug=${encodeURIComponent(c.slug)}" target="_blank">View</a>
@@ -709,6 +897,7 @@
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       formMsg.textContent = "";
+      formMsg.classList.remove('error');
 
       const payload = {
         title: titleEl.value.trim(),
@@ -723,7 +912,8 @@
       };
 
       if (!payload.title || !payload.slug || !payload.syntax || !payload.description || !payload.asciinema_url || !payload.video_url) {
-        formMsg.textContent = "Please fill all required fields.";
+        formMsg.textContent = "Please fill all required fields";
+        formMsg.classList.add('error');
         return;
       }
 
@@ -731,15 +921,16 @@
         if (editingId.value) {
           const { error } = await supabase.from("commands").update(payload).eq("id", editingId.value);
           if (error) throw error;
-          formMsg.textContent = "✅ Updated";
+          formMsg.textContent = "✓ Updated successfully";
         } else {
           const { error } = await supabase.from("commands").insert(payload);
           if (error) throw error;
-          formMsg.textContent = "✅ Created";
+          formMsg.textContent = "✓ Created successfully";
         }
         await loadCommands();
       } catch (err) {
         formMsg.textContent = "Error: " + (err?.message || String(err));
+        formMsg.classList.add('error');
       }
     });
 

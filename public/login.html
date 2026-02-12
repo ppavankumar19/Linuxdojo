@@ -7,261 +7,573 @@
   <script src="/config.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&display=swap" rel="stylesheet">
   
   <style>
+    /* ══════════════════════════════════════════
+       TOKENS
+    ══════════════════════════════════════════ */
     :root {
-      color-scheme: dark;
-      --bg-primary: linear-gradient(145deg, #050810 0%, #0f1419 30%, #1a0f2e 60%, #0d1b2a 100%);
-      --bg-secondary: rgba(20, 28, 50, 0.45);
-      --bg-tertiary: rgba(35, 48, 70, 0.25);
-      --text-primary: #f8fafc;
-      --text-secondary: #d4d8e0;
-      --text-tertiary: #8b95a8;
-      --accent-primary: #00e5ff;
-      --accent-secondary: #0fb0ff;
-      --accent-tertiary: #6366f1;
-      --accent-success: #10b981;
-      --border-color: rgba(80, 95, 120, 0.18);
-      --border-light: rgba(148, 163, 184, 0.08);
+      --bg:         #07090f;
+      --surface:    #0e1524;
+      --surface2:   #14203a;
+      --ink:        #f4f7ff;
+      --ink2:       #d8e2f4;
+      --ink3:       #a4b8d8;
+      --ink4:       #6e88a8;
+      --lime:       #c9ff47;
+      --lime-dim:   rgba(201,255,71,0.12);
+      --lime-glow:  rgba(201,255,71,0.25);
+      --cyan:       #2efff6;
+      --cyan-dim:   rgba(46,255,246,0.1);
+      --violet:     #b09fff;
+      --violet-dim: rgba(176,159,255,0.12);
+      --amber:      #ffd070;
+      --green:      #52ffa8;
+      --green-dim:  rgba(82,255,168,0.12);
+      --red:        #ff7070;
+      --border:     rgba(255,255,255,0.09);
+      --border2:    rgba(255,255,255,0.16);
+      --border3:    rgba(255,255,255,0.25);
     }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    /* ══════════════════════════════════════════  RESET  */
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
 
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: var(--bg-primary);
-      background-attachment: fixed;
-      color: var(--text-primary);
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
       font-size: 14px;
-      line-height: 1.65;
-      letter-spacing: 0.4px;
-      font-weight: 400;
+      line-height: 1.6;
       min-height: 100vh;
+      overflow-x: hidden;
       display: flex;
       flex-direction: column;
     }
 
-    a {
-      color: inherit;
-      text-decoration: none;
+    a { color:inherit; text-decoration:none; }
+
+    /* ══════════════════════════════════════════  BG LAYERS */
+    body::before {
+      content:'';
+      position:fixed; inset:0;
+      background-image: radial-gradient(rgba(255,255,255,0.07) 1px, transparent 1px);
+      background-size: 28px 28px;
+      pointer-events:none; z-index:0;
+    }
+    body::after {
+      content:'';
+      position:fixed; inset:0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events:none; z-index:0; opacity:0.5;
     }
 
-    /* Container */
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 32px 18px;
-      width: 100%;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
+    .orb {
+      position:fixed; border-radius:50%;
+      filter:blur(110px);
+      pointer-events:none; z-index:0;
+    }
+    .orb-1 {
+      width:500px; height:500px;
+      background:radial-gradient(circle, rgba(201,255,71,0.075) 0%, transparent 70%);
+      top:-150px; left:-100px;
+      animation:drift1 20s ease-in-out infinite;
+    }
+    .orb-2 {
+      width:450px; height:450px;
+      background:radial-gradient(circle, rgba(46,255,246,0.06) 0%, transparent 70%);
+      bottom:-100px; right:-100px;
+      animation:drift2 26s ease-in-out infinite;
+    }
+    .orb-3 {
+      width:320px; height:320px;
+      background:radial-gradient(circle, rgba(176,159,255,0.07) 0%, transparent 70%);
+      top:50%; left:50%;
+      animation:drift3 17s ease-in-out infinite;
     }
 
-    /* Top Navigation */
-    .top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 40px;
+    @keyframes drift1 {
+      0%,100%{transform:translate(0,0);}
+      40%{transform:translate(70px,50px);}
+      70%{transform:translate(-20px,80px);}
+    }
+    @keyframes drift2 {
+      0%,100%{transform:translate(0,0);}
+      50%{transform:translate(-60px,-70px);}
+    }
+    @keyframes drift3 {
+      0%,100%{transform:translate(-50%,-50%) scale(1);}
+      50%{transform:translate(-50%,-50%) scale(1.25);}
     }
 
-    /* Buttons */
+    /* ══════════════════════════════════════════  NAV */
+    .nav {
+      position:sticky; top:0; z-index:200;
+      background:rgba(7,9,15,0.86);
+      backdrop-filter:blur(24px) saturate(1.7);
+      -webkit-backdrop-filter:blur(24px) saturate(1.7);
+      border-bottom:1px solid var(--border2);
+    }
+
+    .nav::after {
+      content:'';
+      position:absolute;
+      bottom:-1px; left:0; right:0;
+      height:1px;
+      background:linear-gradient(90deg,
+        transparent 0%,
+        rgba(201,255,71,0.55) 25%,
+        rgba(46,255,246,0.45) 55%,
+        rgba(176,159,255,0.4) 80%,
+        transparent 100%);
+      background-size:200% 100%;
+      animation:navLine 5s linear infinite;
+    }
+
+    @keyframes navLine {
+      0%{background-position:0%;}
+      100%{background-position:200%;}
+    }
+
+    .navin {
+      max-width:1120px;
+      margin:0 auto;
+      padding:0 28px;
+      height:62px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+    }
+
+    /* Brand — typewriter */
+    .brand {
+      font-family:'Space Mono', monospace;
+      font-weight:700;
+      font-size:17px;
+      letter-spacing:3px;
+      text-transform:uppercase;
+      display:flex;
+      align-items:center;
+      user-select:none;
+    }
+
+    .brand-dollar {
+      color:var(--cyan);
+      margin-right:8px;
+      opacity:0.9;
+    }
+
+    #brandText { color:var(--lime); }
+
+    .brand-cursor {
+      display:inline-block;
+      width:9px; height:17px;
+      background:var(--lime);
+      margin-left:3px;
+      vertical-align:middle;
+      border-radius:1px;
+      animation:blink 1s step-end infinite;
+    }
+
+    @keyframes blink {
+      0%,100%{opacity:1;}
+      50%{opacity:0;}
+    }
+
+    .nav-links {
+      display:flex;
+      gap:10px;
+    }
+
+    /* ══════════════════════════════════════════  BUTTONS */
     .btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      padding: 11px 18px;
-      border-radius: 10px;
-      border: 1.2px solid var(--border-color);
-      background: rgba(25, 35, 55, 0.5);
-      color: var(--text-primary);
+      padding: 9px 18px;
+      border-radius: 8px;
+      border: 1px solid var(--border3);
+      background: transparent;
+      color: var(--ink2);
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
       cursor: pointer;
-      font-weight: 550;
-      font-size: 13px;
-      letter-spacing: 0.3px;
-      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-      font-family: 'Inter', sans-serif;
+      white-space: nowrap;
+      transition: background .22s ease, border-color .22s ease,
+                 color .22s ease, box-shadow .22s ease, transform .18s ease;
     }
 
     .btn:hover {
-      background: rgba(40, 55, 80, 0.65);
-      border-color: var(--accent-secondary);
+      background: rgba(201,255,71,0.1);
+      border-color: var(--lime);
+      color: var(--lime);
+      box-shadow: 0 0 20px rgba(201,255,71,0.18), inset 0 1px 0 rgba(201,255,71,0.1);
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(15, 176, 255, 0.1);
     }
+    .btn:active { transform: translateY(0); }
 
     .btn.primary {
-      background: linear-gradient(135deg, var(--accent-success) 0%, #0d9668 100%);
-      color: #071018;
-      border-color: transparent;
-      font-weight: 700;
+      border: 1px solid rgba(201,255,71,0.45);
+      background: var(--lime-dim);
+      color: var(--lime);
       width: 100%;
+      padding: 13px 24px;
+      font-size: 12px;
+      letter-spacing: 1.5px;
     }
 
     .btn.primary:hover {
-      background: linear-gradient(135deg, #13d48f 0%, #10b981 100%);
-      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+      background: var(--lime);
+      border-color: var(--lime);
+      color: #080c00;
+      box-shadow: 0 0 26px var(--lime-glow), 0 4px 18px rgba(0,0,0,0.35);
       transform: translateY(-2px);
     }
 
-    /* Typography */
-    h1 {
-      font-size: 42px;
-      font-weight: 950;
-      margin: 0 0 12px;
-      line-height: 1.15;
-      letter-spacing: -0.8px;
-      background: linear-gradient(135deg, #ffffff 0%, var(--text-secondary) 40%, var(--accent-primary) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+    .btn.secondary {
+      border-color: rgba(255,112,112,0.35);
+      background: rgba(255,112,112,0.08);
+      color: var(--red);
+      width: 100%;
+      padding: 11px 22px;
     }
 
-    .small {
-      color: var(--text-tertiary);
-      font-size: 13px;
+    .btn.secondary:hover {
+      background: rgba(255,112,112,0.16);
+      border-color: var(--red);
+      color: var(--red);
+      box-shadow: 0 0 20px rgba(255,112,112,0.2);
+    }
+
+    /* ══════════════════════════════════════════  CONTAINER */
+    .container {
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 64px 28px;
+      width: 100%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ══════════════════════════════════════════  CARD */
+    .login-wrapper {
+      width: 100%;
+      max-width: 460px;
+      animation: fadeUp 0.6s ease-out;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Header */
+    .login-header {
+      margin-bottom: 32px;
+      text-align: center;
+    }
+
+    .login-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 5px;
+      border: 1px solid rgba(201,255,71,0.38);
+      background: rgba(201,255,71,0.08);
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--lime);
+      margin-bottom: 20px;
+    }
+
+    .eyebrow-dot {
+      width: 6px; height: 6px;
+      background: var(--lime);
+      border-radius: 50%;
+      flex-shrink: 0;
+      animation: pulseDot 2s ease-in-out infinite;
+    }
+
+    @keyframes pulseDot {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(0.7); }
+    }
+
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 48px;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -2px;
+      color: var(--ink);
+      margin-bottom: 12px;
+    }
+
+    h1 .hl { color: var(--lime); }
+
+    .login-desc {
+      font-size: 15px;
       font-weight: 400;
-      letter-spacing: 0.35px;
-      opacity: 0.95;
+      color: var(--ink2);
+      line-height: 1.65;
     }
 
     /* Card */
     .card {
-      border: 1.2px solid var(--border-color);
-      border-radius: 16px;
-      background: rgba(20, 28, 50, 0.45);
-      backdrop-filter: blur(5px);
-      padding: 28px;
-      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-      max-width: 480px;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 18px;
+      padding: 32px;
+      position: relative;
+      overflow: hidden;
     }
 
-    .card:hover {
-      background: rgba(30, 41, 59, 0.55);
-      border-color: rgba(0, 229, 255, 0.12);
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg,
+        var(--lime) 0%, var(--cyan) 40%,
+        var(--violet) 75%, var(--lime) 100%);
+      background-size: 200% 100%;
+      animation: shimmerBar 4s linear infinite;
     }
 
-    /* Row Utility */
-    .row {
+    @keyframes shimmerBar {
+      0% { background-position: 0%; }
+      100% { background-position: 200%; }
+    }
+
+    /* Status Box */
+    .status-box {
+      padding: 18px 20px;
+      border-radius: 12px;
+      background: var(--violet-dim);
+      border: 1px solid rgba(176,159,255,0.35);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .status-box.success {
+      background: var(--green-dim);
+      border-color: rgba(82,255,168,0.45);
+    }
+
+    .status-icon {
+      font-size: 24px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .status-content {
+      flex: 1;
+    }
+
+    .status-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--violet);
+      margin-bottom: 4px;
+    }
+
+    .status-box.success .status-label {
+      color: var(--green);
+    }
+
+    .status-text {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ink2);
+      line-height: 1.5;
+    }
+
+    .status-text b {
+      color: var(--violet);
+      font-weight: 700;
+      font-family: 'Space Mono', monospace;
+    }
+
+    .status-box.success .status-text b {
+      color: var(--green);
+    }
+
+    /* Actions */
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    /* Info Box */
+    .info-box {
+      padding: 18px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
       display: flex;
       gap: 12px;
-      flex-direction: column;
-      align-items: stretch;
-      margin-top: 20px;
+      align-items: flex-start;
     }
 
-    /* Status Message */
-    #status {
-      padding: 14px 16px;
-      border-radius: 12px;
-      background: rgba(99, 102, 241, 0.1);
-      border: 1px solid rgba(99, 102, 241, 0.2);
-      color: var(--accent-tertiary);
-      font-weight: 500;
-      margin-bottom: 16px;
-      letter-spacing: 0.3px;
+    .info-icon {
+      font-size: 20px;
+      line-height: 1;
+      color: var(--cyan);
+      flex-shrink: 0;
+      margin-top: 2px;
     }
 
-    /* Info Text */
-    .info {
-      margin-top: 20px;
-      color: var(--text-tertiary);
+    .info-text {
       font-size: 13px;
-      font-weight: 400;
-      letter-spacing: 0.35px;
+      line-height: 1.7;
+      color: var(--ink3);
+      font-family: 'DM Sans', sans-serif;
     }
 
-    .info b {
-      color: var(--accent-primary);
+    .info-text b {
+      color: var(--cyan);
       font-weight: 600;
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
     }
 
-    /* Animation */
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .card {
-      animation: fadeIn 0.5s ease-out;
-    }
-
-    /* Scrollbar */
-    ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
-    }
-
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background: rgba(71, 85, 105, 0.4);
-      border-radius: 4px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-      background: rgba(71, 85, 105, 0.6);
-    }
-
-    /* Responsive */
+    /* ══════════════════════════════════════════  RESPONSIVE */
     @media (max-width: 640px) {
       .container {
-        padding: 24px 14px;
+        padding: 48px 20px;
+      }
+
+      .navin {
+        padding: 0 20px;
+      }
+
+      .brand {
+        font-size: 14px;
+        letter-spacing: 2px;
       }
 
       h1 {
-        font-size: 32px;
-        margin-bottom: 10px;
-      }
-
-      .top {
-        margin-bottom: 32px;
+        font-size: 38px;
       }
 
       .card {
-        padding: 20px;
+        padding: 24px;
       }
     }
+
+    /* ══════════════════════════════════════════  SCROLLBAR */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(201,255,71,0.2); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(201,255,71,0.38); }
   </style>
 </head>
 
 <body>
-  <div class="container">
-    <div class="top">
-      <a href="/" class="btn">← Home</a>
-      <a href="/admin.html" class="btn">Admin Panel</a>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="navin">
+      <a href="/" class="brand">
+        <span class="brand-dollar">$&nbsp;</span>
+        <span id="brandText"></span>
+        <span class="brand-cursor"></span>
+      </a>
+      <div class="nav-links">
+        <a href="/" class="btn">← Home</a>
+        <a href="/admin.html" class="btn">Admin</a>
+      </div>
     </div>
+  </nav>
 
-    <h1>Welcome</h1>
-    <div class="small">Sign in using GitHub OAuth (Supabase).</div>
-
-    <div class="card">
-      <div id="status" class="small">Checking session…</div>
-
-      <div class="row">
-        <button id="btnLogin" class="btn primary">Continue with GitHub</button>
-        <button id="btnLogout" class="btn">Logout</button>
+  <!-- Main Container -->
+  <div class="container">
+    <div class="login-wrapper">
+      
+      <!-- Header -->
+      <div class="login-header">
+        <div class="login-eyebrow">
+          <span class="eyebrow-dot"></span>
+          Authentication Portal
+        </div>
+        <h1>Welcome <span class="hl">Back</span></h1>
+        <p class="login-desc">Sign in using GitHub OAuth via Supabase</p>
       </div>
 
-      <div class="info">
-        After login, you can access <b>/admin</b> if your role is <b>admin</b>.
+      <!-- Card -->
+      <div class="card">
+        <!-- Status Box -->
+        <div id="statusBox" class="status-box">
+          <div class="status-icon">⟳</div>
+          <div class="status-content">
+            <div class="status-label">Status</div>
+            <div class="status-text" id="statusText">Checking session…</div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="actions" id="actionsBox">
+          <button id="btnLogin" class="btn primary">→ Continue with GitHub</button>
+          <button id="btnLogout" class="btn secondary" style="display:none;">✕ Sign Out</button>
+        </div>
+
+        <!-- Info Box -->
+        <div class="info-box">
+          <div class="info-icon">ℹ</div>
+          <div class="info-text">
+            After login, you can access <b>/admin</b> if your role is <b>admin</b>.
+          </div>
+        </div>
       </div>
+
     </div>
   </div>
+
+  <!-- ════════════════════════════════ SCRIPTS ════ -->
+  <script>
+    /* ── Terminal typewriter for brand ─────────────── */
+    (function() {
+      const WORD  = 'LinuxDojo';
+      const el    = document.getElementById('brandText');
+      let i = 0;
+
+      function type() {
+        if (i < WORD.length) {
+          el.textContent += WORD[i];
+          i++;
+          setTimeout(type, 80 + Math.random() * 80);
+        }
+      }
+
+      setTimeout(type, 400);
+    })();
+  </script>
 
   <script type="module">
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
@@ -269,22 +581,32 @@
     const cfg = window.__CONFIG__;
     const supabase = createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
 
-    const statusEl = document.getElementById("status");
+    const statusBox = document.getElementById("statusBox");
+    const statusText = document.getElementById("statusText");
     const btnLogin = document.getElementById("btnLogin");
     const btnLogout = document.getElementById("btnLogout");
 
     async function refreshStatus() {
       const { data: { session } } = await supabase.auth.getSession();
+      
       if (session?.user) {
-        statusEl.innerHTML = `Signed in as <b style="color:var(--accent-success);">${session.user.email ?? session.user.id}</b>`;
-        statusEl.style.background = "rgba(16, 185, 129, 0.1)";
-        statusEl.style.borderColor = "rgba(16, 185, 129, 0.2)";
-        statusEl.style.color = "var(--accent-success)";
+        // Signed in
+        statusBox.classList.add('success');
+        statusBox.querySelector('.status-icon').textContent = '✓';
+        statusBox.querySelector('.status-label').textContent = 'Authenticated';
+        statusText.innerHTML = `Signed in as <b>${session.user.email ?? session.user.id}</b>`;
+        
+        btnLogin.style.display = 'none';
+        btnLogout.style.display = 'block';
       } else {
-        statusEl.textContent = "Not signed in.";
-        statusEl.style.background = "rgba(99, 102, 241, 0.1)";
-        statusEl.style.borderColor = "rgba(99, 102, 241, 0.2)";
-        statusEl.style.color = "var(--accent-tertiary)";
+        // Not signed in
+        statusBox.classList.remove('success');
+        statusBox.querySelector('.status-icon').textContent = '◉';
+        statusBox.querySelector('.status-label').textContent = 'Status';
+        statusText.textContent = 'Not signed in';
+        
+        btnLogin.style.display = 'block';
+        btnLogout.style.display = 'none';
       }
     }
 

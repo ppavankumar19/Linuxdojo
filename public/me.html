@@ -8,285 +8,553 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&display=swap" rel="stylesheet">
 
   <style>
+    /* ══════════════════════════════════════════
+       TOKENS
+    ══════════════════════════════════════════ */
     :root {
-      color-scheme: dark;
-      --bg-primary: linear-gradient(145deg, #050810 0%, #0f1419 30%, #1a0f2e 60%, #0d1b2a 100%);
-      --bg-secondary: rgba(20, 28, 50, 0.45);
-      --bg-tertiary: rgba(35, 48, 70, 0.25);
-      --text-primary: #f8fafc;
-      --text-secondary: #d4d8e0;
-      --text-tertiary: #8b95a8;
-      --accent-primary: #00e5ff;
-      --accent-secondary: #0fb0ff;
-      --accent-tertiary: #6366f1;
-      --accent-success: #10b981;
-      --accent-warn: #f59e0b;
-      --border-color: rgba(80, 95, 120, 0.18);
-      --border-light: rgba(148, 163, 184, 0.08);
+      --bg:         #07090f;
+      --surface:    #0e1524;
+      --surface2:   #14203a;
+      --ink:        #f4f7ff;
+      --ink2:       #d8e2f4;
+      --ink3:       #a4b8d8;
+      --ink4:       #6e88a8;
+      --lime:       #c9ff47;
+      --lime-dim:   rgba(201,255,71,0.12);
+      --lime-glow:  rgba(201,255,71,0.25);
+      --cyan:       #2efff6;
+      --cyan-dim:   rgba(46,255,246,0.1);
+      --violet:     #b09fff;
+      --violet-dim: rgba(176,159,255,0.12);
+      --amber:      #ffd070;
+      --amber-dim:  rgba(255,208,112,0.12);
+      --green:      #52ffa8;
+      --green-dim:  rgba(82,255,168,0.12);
+      --red:        #ff7070;
+      --border:     rgba(255,255,255,0.09);
+      --border2:    rgba(255,255,255,0.16);
+      --border3:    rgba(255,255,255,0.25);
     }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    /* ══════════════════════════════════════════  RESET  */
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
 
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: var(--bg-primary);
-      background-attachment: fixed;
-      color: var(--text-primary);
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
       font-size: 14px;
-      line-height: 1.65;
-      letter-spacing: 0.4px;
-      font-weight: 400;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
     }
 
-    a {
-      color: inherit;
-      text-decoration: none;
+    a { color:inherit; text-decoration:none; }
+
+    /* ══════════════════════════════════════════  BG LAYERS */
+    body::before {
+      content:'';
+      position:fixed; inset:0;
+      background-image: radial-gradient(rgba(255,255,255,0.07) 1px, transparent 1px);
+      background-size: 28px 28px;
+      pointer-events:none; z-index:0;
+    }
+    body::after {
+      content:'';
+      position:fixed; inset:0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events:none; z-index:0; opacity:0.5;
     }
 
+    .orb {
+      position:fixed; border-radius:50%;
+      filter:blur(110px);
+      pointer-events:none; z-index:0;
+    }
+    .orb-1 {
+      width:600px; height:600px;
+      background:radial-gradient(circle, rgba(201,255,71,0.075) 0%, transparent 70%);
+      top:-200px; left:-150px;
+      animation:drift1 20s ease-in-out infinite;
+    }
+    .orb-2 {
+      width:500px; height:500px;
+      background:radial-gradient(circle, rgba(46,255,246,0.06) 0%, transparent 70%);
+      bottom:-120px; right:-120px;
+      animation:drift2 26s ease-in-out infinite;
+    }
+
+    @keyframes drift1 {
+      0%,100%{transform:translate(0,0);}
+      40%{transform:translate(70px,50px);}
+      70%{transform:translate(-20px,80px);}
+    }
+    @keyframes drift2 {
+      0%,100%{transform:translate(0,0);}
+      50%{transform:translate(-60px,-70px);}
+    }
+
+    /* ══════════════════════════════════════════  NAV */
+    .nav {
+      position:sticky; top:0; z-index:200;
+      background:rgba(7,9,15,0.86);
+      backdrop-filter:blur(24px) saturate(1.7);
+      -webkit-backdrop-filter:blur(24px) saturate(1.7);
+      border-bottom:1px solid var(--border2);
+    }
+
+    .nav::after {
+      content:'';
+      position:absolute;
+      bottom:-1px; left:0; right:0;
+      height:1px;
+      background:linear-gradient(90deg,
+        transparent 0%,
+        rgba(201,255,71,0.55) 25%,
+        rgba(46,255,246,0.45) 55%,
+        rgba(176,159,255,0.4) 80%,
+        transparent 100%);
+      background-size:200% 100%;
+      animation:navLine 5s linear infinite;
+    }
+
+    @keyframes navLine {
+      0%{background-position:0%;}
+      100%{background-position:200%;}
+    }
+
+    .navin {
+      max-width:1120px;
+      margin:0 auto;
+      padding:0 28px;
+      height:62px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+    }
+
+    /* Brand — typewriter */
+    .brand {
+      font-family:'Space Mono', monospace;
+      font-weight:700;
+      font-size:17px;
+      letter-spacing:3px;
+      text-transform:uppercase;
+      display:flex;
+      align-items:center;
+      user-select:none;
+    }
+
+    .brand-dollar {
+      color:var(--cyan);
+      margin-right:8px;
+      opacity:0.9;
+    }
+
+    #brandText { color:var(--lime); }
+
+    .brand-cursor {
+      display:inline-block;
+      width:9px; height:17px;
+      background:var(--lime);
+      margin-left:3px;
+      vertical-align:middle;
+      border-radius:1px;
+      animation:blink 1s step-end infinite;
+    }
+
+    @keyframes blink {
+      0%,100%{opacity:1;}
+      50%{opacity:0;}
+    }
+
+    /* ══════════════════════════════════════════  BUTTONS */
     .btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      padding: 11px 18px;
-      border-radius: 10px;
-      border: 1.2px solid var(--border-color);
-      background: rgba(25, 35, 55, 0.5);
-      color: var(--text-primary);
+      padding: 9px 18px;
+      border-radius: 8px;
+      border: 1px solid var(--border3);
+      background: transparent;
+      color: var(--ink2);
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
       cursor: pointer;
-      font-weight: 550;
-      font-size: 13px;
-      letter-spacing: 0.3px;
-      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-      font-family: 'Inter', sans-serif;
+      white-space: nowrap;
+      transition: background .22s ease, border-color .22s ease,
+                 color .22s ease, box-shadow .22s ease, transform .18s ease;
     }
 
     .btn:hover {
-      background: rgba(40, 55, 80, 0.65);
-      border-color: var(--accent-secondary);
+      background: rgba(201,255,71,0.1);
+      border-color: var(--lime);
+      color: var(--lime);
+      box-shadow: 0 0 20px rgba(201,255,71,0.18), inset 0 1px 0 rgba(201,255,71,0.1);
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(15, 176, 255, 0.1);
     }
+    .btn:active { transform: translateY(0); }
 
     .btn.primary {
-      background: linear-gradient(135deg, var(--accent-success) 0%, #0d9668 100%);
-      color: #071018;
-      border-color: transparent;
-      font-weight: 700;
+      border: 1px solid rgba(201,255,71,0.45);
+      background: var(--lime-dim);
+      color: var(--lime);
+      padding: 11px 24px;
+      font-size: 12px;
+      letter-spacing: 1.5px;
     }
 
     .btn.primary:hover {
-      background: linear-gradient(135deg, #13d48f 0%, #10b981 100%);
-      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
-      transform: translateY(-2px);
+      background: var(--lime);
+      border-color: var(--lime);
+      color: #080c00;
+      box-shadow: 0 0 26px var(--lime-glow), 0 4px 18px rgba(0,0,0,0.35);
     }
 
+    /* ══════════════════════════════════════════  CONTAINER */
     .container {
-      max-width: 1000px;
+      max-width: 1120px;
       margin: 0 auto;
-      padding: 32px 18px;
+      padding: 64px 28px 96px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ══════════════════════════════════════════  HEADER */
+    .page-header {
+      margin-bottom: 40px;
     }
 
     h1 {
-      margin: 10px 0 6px;
-      font-size: 34px;
-      font-weight: 900;
-      line-height: 1.15;
-      letter-spacing: -0.6px;
-      background: linear-gradient(135deg, #ffffff 0%, var(--text-secondary) 40%, var(--accent-primary) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      font-family: 'Syne', sans-serif;
+      font-size: 48px;
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -2px;
+      color: var(--ink);
+      margin-bottom: 12px;
     }
 
     .small {
-      color: var(--text-tertiary);
-      font-size: 13px;
+      color: var(--ink3);
+      font-size: 15px;
       font-weight: 400;
-      letter-spacing: 0.35px;
-      opacity: 0.95;
+      letter-spacing: 0.3px;
+      line-height: 1.6;
     }
 
+    /* ══════════════════════════════════════════  GRID */
     .grid {
       display: grid;
-      gap: 14px;
+      gap: 20px;
       grid-template-columns: repeat(12, 1fr);
-      margin-top: 18px;
     }
 
     .card {
       grid-column: span 12;
-      border: 1.2px solid var(--border-color);
-      border-radius: 16px;
-      background: var(--bg-secondary);
-      backdrop-filter: blur(5px);
-      padding: 22px;
-      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 18px;
+      padding: 32px;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp 0.6s ease-out;
     }
 
-    .card:hover {
-      background: rgba(30, 41, 59, 0.55);
-      border-color: rgba(0, 229, 255, 0.12);
-      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.5);
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    @media(min-width:900px){
-      .half{grid-column:span 6}
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg,
+        var(--lime) 0%, var(--cyan) 40%,
+        var(--violet) 75%, var(--lime) 100%);
+      background-size: 200% 100%;
+      animation: shimmerBar 4s linear infinite;
     }
 
+    @keyframes shimmerBar {
+      0% { background-position: 0%; }
+      100% { background-position: 200%; }
+    }
+
+    @media(min-width:900px) {
+      .half { grid-column: span 6; }
+    }
+
+    /* ══════════════════════════════════════════  CARD HEADER */
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      margin-bottom: 24px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .card-title-section {
+      flex: 1;
+    }
+
+    .card-icon {
+      font-size: 28px;
+      line-height: 1;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 20px;
+      color: var(--ink);
+      letter-spacing: -0.5px;
+      margin-bottom: 6px;
+    }
+
+    /* ══════════════════════════════════════════  BADGES */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid var(--border2);
+      background: rgba(255,255,255,0.06);
+      color: var(--ink2);
+      letter-spacing: 0.5px;
+    }
+
+    .badge.ok {
+      border-color: rgba(82,255,168,0.45);
+      background: var(--green-dim);
+      color: var(--green);
+    }
+
+    .badge.warn {
+      border-color: rgba(255,208,112,0.45);
+      background: var(--amber-dim);
+      color: var(--amber);
+    }
+
+    .badge.count {
+      font-size: 18px;
+      padding: 8px 16px;
+      font-weight: 800;
+    }
+
+    /* ══════════════════════════════════════════  ITEMS */
     .item {
-      padding: 14px;
-      border: 1.2px solid var(--border-color);
+      padding: 20px;
+      border: 1px solid var(--border2);
       border-radius: 14px;
-      background: rgba(15, 23, 42, 0.6);
-      margin-top: 10px;
-      transition: all 0.3s ease;
+      background: rgba(0,0,0,0.3);
+      margin-top: 12px;
+      transition: all 0.25s ease;
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .item:hover {
-      border-color: var(--accent-primary);
-      background: rgba(30, 41, 59, 0.75);
-      transform: translateY(-1px);
+      background: rgba(0,0,0,0.5);
+      border-color: var(--border3);
+      transform: translateX(5px);
     }
 
     .row {
       display: flex;
       justify-content: space-between;
-      gap: 10px;
+      gap: 16px;
       align-items: flex-start;
       flex-wrap: wrap;
     }
 
-    .title {
-      font-weight: 750;
-      font-size: 15px;
-      color: var(--text-primary);
-      letter-spacing: -0.1px;
+    .item-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--ink);
+      letter-spacing: -0.3px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
     }
 
-    .badge {
-      display: inline-block;
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid var(--border-color);
-      font-size: 11px;
-      color: var(--text-tertiary);
-      font-weight: 550;
-      font-family: 'Geist Mono', monospace;
-      background: rgba(25, 35, 55, 0.5);
-      letter-spacing: 0.35px;
-      backdrop-filter: blur(1px);
+    .item-badges {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
-    .badge.ok {
-      border-color: var(--accent-success);
-      color: var(--accent-success);
-      background: rgba(16, 185, 129, 0.1);
+    .item-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
     }
 
-    .badge.warn {
-      border-color: var(--accent-warn);
-      color: var(--accent-warn);
-      background: rgba(245, 158, 11, 0.08);
+    .empty-state {
+      padding: 40px 20px;
+      text-align: center;
+      background: rgba(255,255,255,0.02);
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+      margin-top: 12px;
     }
 
-    .mono {
-      font-family: 'Geist Mono', ui-monospace, Menlo, Monaco, Consolas, monospace;
+    .empty-state-icon {
+      font-size: 40px;
+      margin-bottom: 12px;
+      opacity: 0.3;
     }
 
-    /* Animation */
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(12px);
+    .empty-state-text {
+      font-family: 'Space Mono', monospace;
+      font-size: 13px;
+      color: var(--ink3);
+      letter-spacing: 0.5px;
+    }
+
+    /* ══════════════════════════════════════════  GATE */
+    #gate .title {
+      font-size: 24px;
+      margin-bottom: 12px;
+    }
+
+    /* ══════════════════════════════════════════  RESPONSIVE */
+    @media (max-width: 900px) {
+      .half {
+        grid-column: span 12 !important;
       }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
     }
 
-    .card {
-      animation: fadeIn 0.5s ease-out;
-    }
-
-    /* Scrollbar */
-    ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
-    }
-
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background: rgba(71, 85, 105, 0.4);
-      border-radius: 4px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-      background: rgba(71, 85, 105, 0.6);
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
+    @media (max-width: 640px) {
       .container {
-        padding: 24px 14px;
+        padding: 48px 20px 72px;
+      }
+
+      .navin {
+        padding: 0 20px;
+      }
+
+      .brand {
+        font-size: 14px;
+        letter-spacing: 2px;
       }
 
       h1 {
-        font-size: 26px;
-        margin-bottom: 8px;
+        font-size: 38px;
       }
 
       .card {
-        padding: 18px;
+        padding: 24px;
+      }
+
+      .row {
+        flex-direction: column;
+      }
+
+      .item-actions {
+        width: 100%;
+        flex-direction: column;
+      }
+
+      .item-actions .btn {
+        width: 100%;
       }
     }
+
+    /* ══════════════════════════════════════════  SCROLLBAR */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(201,255,71,0.2); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(201,255,71,0.38); }
   </style>
 </head>
 <body>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
   <div id="navMount"></div>
 
   <div class="container">
-    <h1>My Progress</h1>
-    <div class="small">Track what you’ve completed and resume what you started.</div>
+    <div class="page-header">
+      <h1>My Progress</h1>
+      <div class="small">Track what you've completed and resume what you started</div>
+    </div>
 
-    <div id="gate" class="card" style="margin-top:14px;">
+    <div id="gate" class="card">
       <div class="small">Loading session...</div>
     </div>
 
     <div id="content" class="grid" style="display:none;">
       <div class="card half">
-        <div class="row">
-          <div>
-            <div class="title">✅ Completed</div>
-            <div class="small">Commands you finished.</div>
+        <div class="card-header">
+          <div class="card-title-section">
+            <span class="card-icon">✓</span>
+            <div class="title">Completed</div>
+            <div class="small">Commands you finished</div>
           </div>
-          <span class="badge ok" id="completedCount">0</span>
+          <span class="badge ok count" id="completedCount">0</span>
         </div>
         <div id="completedList"></div>
       </div>
 
       <div class="card half">
-        <div class="row">
-          <div>
-            <div class="title">🟡 In Progress</div>
-            <div class="small">Continue where you left off.</div>
+        <div class="card-header">
+          <div class="card-title-section">
+            <span class="card-icon">◐</span>
+            <div class="title">In Progress</div>
+            <div class="small">Continue where you left off</div>
           </div>
-          <span class="badge warn" id="progressCount">0</span>
+          <span class="badge warn count" id="progressCount">0</span>
         </div>
         <div id="progressList"></div>
       </div>
     </div>
   </div>
+
+  <!-- ════════════════════════════════ SCRIPTS ════ -->
+  <script>
+    /* ── Terminal typewriter for brand ─────────────── */
+    (function() {
+      const WORD  = 'LinuxDojo';
+      const el    = document.getElementById('brandText');
+      if (!el) return;
+      let i = 0;
+
+      function type() {
+        if (i < WORD.length) {
+          el.textContent += WORD[i];
+          i++;
+          setTimeout(type, 80 + Math.random() * 80);
+        }
+      }
+
+      setTimeout(type, 400);
+    })();
+  </script>
 
   <script type="module">
     import { getSupabase, getSessionAndRole, renderNav, escapeHtml } from "/js/app.js";
@@ -306,19 +574,19 @@
       return `
         <div class="item">
           <div class="row">
-            <div>
-              <div class="title">
+            <div style="flex:1;min-width:200px;">
+              <div class="item-title">
                 ${escapeHtml(row.title || row.command_slug)}
                 ${statusBadgeHtml}
               </div>
-              <div class="small" style="margin-top:6px;">
-                ${row.syntax ? `<span class="badge mono">${escapeHtml(row.syntax)}</span>` : ``}
-                <span class="badge mono">/${escapeHtml(row.command_slug)}</span>
+              <div class="item-badges">
+                ${row.syntax ? `<span class="badge">${escapeHtml(row.syntax)}</span>` : ``}
+                <span class="badge">/${escapeHtml(row.command_slug)}</span>
               </div>
             </div>
-            <div style="display:flex;gap:10px;flex-wrap:wrap;">
-              <a class="btn" href="/command.html?slug=${encodeURIComponent(row.command_slug)}">Open</a>
-              <a class="btn primary" href="/practice.html?slug=${encodeURIComponent(row.command_slug)}">Practice</a>
+            <div class="item-actions">
+              <a class="btn" href="/command.html?slug=${encodeURIComponent(row.command_slug)}">View</a>
+              <a class="btn primary" href="/practice.html?slug=${encodeURIComponent(row.command_slug)}">→ Practice</a>
             </div>
           </div>
         </div>
@@ -340,9 +608,9 @@
       if (!state.user) {
         gate.innerHTML = `
           <div class="title">You are not logged in</div>
-          <div class="small" style="margin-top:6px;">Login to see your progress.</div>
-          <div style="margin-top:12px;">
-            <a class="btn primary" href="/login.html">Login</a>
+          <div class="small" style="margin-top:12px;">Login to see your progress</div>
+          <div style="margin-top:20px;">
+            <a class="btn primary" href="/login.html">→ Login</a>
           </div>
         `;
         return;
@@ -387,15 +655,21 @@
       progressCount.textContent = String(inProgress.length);
 
       completedList.innerHTML = completed.length
-        ? completed.map(r => itemHTML(r, `<span class="badge ok" style="margin-left:8px;">✅ Completed</span>`)).join("")
-        : `<div class="item small">No completed commands yet.</div>`;
+        ? completed.map(r => itemHTML(r, `<span class="badge ok">✓ Done</span>`)).join("")
+        : `<div class="empty-state">
+             <div class="empty-state-icon">◯</div>
+             <div class="empty-state-text">// No completed commands yet</div>
+           </div>`;
 
       progressList.innerHTML = inProgress.length
         ? inProgress.map(r => itemHTML(
             r,
-            `<span class="badge warn" style="margin-left:8px;">Step ${r.step_index + 1}</span>`
+            `<span class="badge warn">Step ${r.step_index + 1}</span>`
           )).join("")
-        : `<div class="item small">No in-progress commands yet.</div>`;
+        : `<div class="empty-state">
+             <div class="empty-state-icon">◯</div>
+             <div class="empty-state-text">// No in-progress commands yet</div>
+           </div>`;
 
       gate.style.display = "none";
       content.style.display = "grid";
