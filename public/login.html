@@ -507,7 +507,6 @@
       </a>
       <div class="nav-links">
         <a href="/" class="btn">← Home</a>
-        <a href="/admin.html" class="btn">Admin</a>
       </div>
     </div>
   </nav>
@@ -611,7 +610,8 @@
     }
 
     btnLogin.addEventListener("click", async () => {
-      const redirectTo = `${cfg.SITE_URL}/callback.html`;
+      // Use current origin so this works on any deployment (localhost, Render, etc.)
+      const redirectTo = `${window.location.origin}/callback.html`;
 
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "github",
