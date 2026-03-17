@@ -1,145 +1,249 @@
-# LinuxDojo 🐧⚡
-A learning-focused web app to master **Linux/Ubuntu commands** with:
-- Command explanations + syntax
-- Asciinema terminal demos
-- External video explanations (YouTube / NotebookLM / any URL)
-- Built-in practice mode
-- Progress tracking per user
-- Admin dashboard to create/publish commands
+# LinuxDojo 🐧
 
-This project is built using **static HTML + CSS** on the frontend and **Node.js (Express)** as the backend server, with **Supabase** for:
-- PostgreSQL database
-- GitHub OAuth authentication
-- Row Level Security (RLS)
+A learning-focused web app to master **Linux/Ubuntu commands** with:
+- Command browser with search and category filters
+- Asciinema terminal demos + video explanations
+- Guided practice mode with step-by-step lessons
+- Per-user progress tracking (completed / in-progress)
+- Admin dashboard to create, edit, and publish commands
+
+Built with **static HTML + CSS** on the frontend, **Node.js (Express)** as the server, and **Supabase** for the database, auth, and security.
 
 ---
 
 ## Tech Stack
-- **Frontend:** HTML + CSS (mobile-first, responsive)
-- **Backend:** Node.js + Express
-- **Auth:** Supabase Auth (GitHub OAuth)
-- **Database:** Supabase Postgres
-- **Security:** Supabase RLS policies (Admin-only write access)
+
+| Layer       | Technology                                |
+|-------------|-------------------------------------------|
+| Frontend    | HTML + CSS + Vanilla JS (ES Modules)      |
+| Backend     | Node.js + Express                         |
+| Auth        | Supabase Auth (GitHub OAuth)              |
+| Database    | Supabase Postgres                         |
+| Security    | Supabase Row Level Security (RLS)         |
+| Deployment  | Render                                    |
 
 ---
 
 ## Features
+
 ### User
-- Browse published Linux commands on the home page
-- Open command details: syntax, description, asciinema, video
-- Practice commands
-- Track progress (completed / in-progress) in `/me.html`
+- Browse all published Linux commands on the home page
+- Search by name, slug, or syntax; filter by category tag
+- Open a command to view description, asciinema demo, and video
+- Practice commands in guided step-by-step mode
+- Track completed and in-progress commands on `/me.html`
 
 ### Admin
-- Admin-only access to `/admin.html`
-- Create, edit, publish/unpublish, delete commands
-- Live preview for asciinema + video embed
+- Admin-only access to `/admin.html` (role check via Supabase RLS)
+- Create, edit, publish/unpublish, and delete commands
+- Live preview for asciinema embed and video embed
 
 ---
 
-## Folder Structure
+## Project Structure
+
+```
+linuxdojo/
+├── public/
+│   ├── index.html        # Home: browse, search, filter commands
+│   ├── command.html      # Command detail: description, media
+│   ├── practice.html     # Guided practice mode
+│   ├── me.html           # My Progress (auth required)
+│   ├── login.html        # GitHub OAuth sign-in
+│   ├── callback.html     # OAuth redirect handler
+│   ├── admin.html        # Admin dashboard (admin role required)
+│   └── js/
+│       └── app.js        # Shared: getSupabase, getSessionAndRole, renderNav, escapeHtml
+├── server.js             # Express: serves /config.js dynamically + static files
+├── package.json
+└── .env                  # Local secrets — NOT committed (see .gitignore)
 ```
 
-linuxdojo/
-├─ public/
-│  ├─ index.html          # Home: list/search/filter commands
-│  ├─ command.html        # Command details
-│  ├─ practice.html       # Practice mode
-│  ├─ me.html             # My Progress page
-│  ├─ login.html          # GitHub OAuth sign-in
-│  ├─ callback.html       # OAuth redirect landing page
-│  └─ admin.html          # Admin dashboard (admin-only)
-├─ server.js              # Express server + /config.js endpoint
-├─ package.json
-├─ package-lock.json
-└─ .env                   # local secrets (NOT committed)
+---
 
-````
+## Architecture & Data Flow
+
+### Backend → Frontend Config Flow
+
+```
+Browser requests /config.js
+        │
+        ▼
+server.js: GET /config.js route (runs BEFORE static middleware)
+        │   Reads SUPABASE_URL, SUPABASE_ANON_KEY, SITE_URL from env vars
+        │   Returns: window.__CONFIG__ = { SUPABASE_URL, SUPABASE_ANON_KEY }
+        ▼
+Browser: window.__CONFIG__ is available
+        │
+        ▼
+public/js/app.js: getSupabase() reads window.__CONFIG__ → creates Supabase client
+```
+
+> The `/config.js` route in server.js is registered **before** `express.static` so it always
+> serves the dynamic version from environment variables, not a hardcoded static file.
+
+### Frontend → Supabase Data Flow
+
+The frontend communicates **directly with Supabase** via the Supabase JS client (CDN).
+The Express server only serves files and the config — it does not proxy database queries.
+
+```
+User action (search, practice, login, etc.)
+        │
+        ▼
+Browser: Supabase JS client (from CDN)
+        │   Authenticated via GitHub OAuth session cookie (managed by Supabase)
+        │   All writes/reads go through RLS policies
+        ▼
+Supabase Postgres
+  ├── commands  — Linux command content (read: public; write: admin RLS)
+  ├── profiles  — One row per user, stores role (read: own row only)
+  └── progress  — Per-user step tracking (read/write: own rows only via RLS)
+```
+
+### Auth Flow (GitHub OAuth)
+
+```
+1. User clicks "Login" on /login.html
+2. Browser calls supabase.auth.signInWithOAuth({ provider: "github", redirectTo: window.location.origin + "/callback.html" })
+3. GitHub OAuth → redirects back to /callback.html
+4. callback.html calls supabase.auth.getSession() — session is auto-stored by Supabase
+5. On success: redirects to / (home page)
+6. Supabase trigger creates a row in public.profiles on first login
+7. app.js getSessionAndRole() reads profiles.role for admin check
+```
+
+### Page Navigation Flow
+
+```
+/                    Home page — browse + search commands
+  │
+  ├─ /command.html?slug=cd    Command detail (description, asciinema, video)
+  │        └─ /practice.html?slug=cd    Guided practice for that command
+  │
+  ├─ /me.html                  My Progress (auth required — redirects to login if not)
+  ├─ /login.html               GitHub OAuth login
+  ├─ /callback.html            OAuth redirect handler (auto-redirects to /)
+  └─ /admin.html               Admin dashboard (admin role required)
+```
 
 ---
 
-## Supabase Database Schema (SQL)
-Create these tables and policies in Supabase SQL Editor.
+## Supabase Database Schema
 
 ### Tables
-- `profiles` — one row per authenticated user (role stored here)
-- `commands` — Linux commands list
-- `progress` — tracks per-user practice completion (if enabled)
 
-> Use the SQL you already added in Supabase (tables + triggers + RLS).
-
-### Admin Role
-To promote an account to an admin:
+**`profiles`** — one row per authenticated user (auto-created by trigger)
 ```sql
-Update the public. profiles
-set role = 'admin'
-where email = 'YOUR_EMAIL_HERE';
+id         uuid  PRIMARY KEY (references auth.users)
+email      text
+role       text  DEFAULT 'user'  -- 'user' | 'admin'
+created_at timestamptz
+```
 
-select email, role from public. profiles;
-````
+**`commands`** — Linux command content
+```sql
+id             uuid  PRIMARY KEY DEFAULT gen_random_uuid()
+slug           text  UNIQUE NOT NULL
+title          text  NOT NULL
+syntax         text  NOT NULL
+description    text
+asciinema_url  text
+video_url      text
+tags           text[]
+lesson_steps   text[]
+published      boolean DEFAULT false
+created_at     timestamptz
+updated_at     timestamptz
+```
+
+**`progress`** — per-user practice tracking
+```sql
+id            uuid  PRIMARY KEY DEFAULT gen_random_uuid()
+user_id       uuid  REFERENCES auth.users (UNIQUE with command_slug)
+command_slug  text
+step_index    int   DEFAULT 0
+is_completed  boolean DEFAULT false
+completed_at  timestamptz
+updated_at    timestamptz
+```
+
+### Promote a user to Admin
+
+```sql
+UPDATE public.profiles
+SET role = 'admin'
+WHERE email = 'YOUR_EMAIL_HERE';
+
+-- Verify
+SELECT email, role FROM public.profiles;
+```
 
 ---
 
 ## Environment Variables
 
-Create a `.env` file in the  project root:
+Create a `.env` file in the project root for local development:
 
 ```env
 SUPABASE_URL=https://YOUR_PROJECT_ID.supabase.co
 SUPABASE_ANON_KEY=YOUR_ANON_PUBLIC_KEY
-PORT=3000
+PORT=4000
 ```
+
+> `SUPABASE_ANON_KEY` is the **public anon key** — safe to expose in client-side code.
+> The server serves it to the browser via `/config.js`.
 
 ---
 
-## Run Locally (Git Bash / Windows)
+## Run Locally
 
 ```bash
 npm install
 node server.js
+# or
+npm run dev
 ```
 
-App will run at:
-
-* [http://localhost:3000](http://localhost:3000)
+App runs at: [http://localhost:4000](http://localhost:4000)
 
 ---
 
 ## Routes
 
-* `/` → Home
-* `/login.html` → GitHub login
-* `/callback.html` → OAuth landing redirect
-* `/command.html?slug=cd` → command details
-* `/practice.html?slug=cd` → practice mode
-* `/me.html` → progress
-* `/admin.html` → admin dashboard (admin role required)
+| URL                            | Description                            |
+|--------------------------------|----------------------------------------|
+| `/`                            | Home — command list, search, filter    |
+| `/login.html`                  | GitHub OAuth sign-in                   |
+| `/callback.html`               | OAuth redirect handler                 |
+| `/command.html?slug=<slug>`    | Command detail page                    |
+| `/practice.html?slug=<slug>`   | Guided practice for a command          |
+| `/practice.html`               | Free practice mode (no slug)           |
+| `/me.html`                     | My Progress (login required)           |
+| `/admin.html`                  | Admin dashboard (admin role required)  |
+| `/config.js`                   | Dynamic config endpoint (server-side)  |
 
 ---
 
-## Deploy (Render)
+## Deploy on Render
 
-**Planned deployment** on Render:
+1. Connect your GitHub repo to Render (Web Service)
+2. **Build command:** `npm install`
+3. **Start command:** `node server.js`
+4. Add environment variables in the Render dashboard:
+   - `SUPABASE_URL`
+   - `SUPABASE_ANON_KEY`
+   - `PORT` (Render sets this automatically)
 
-* Build command: `npm install`
-* Start command: `node server.js`
-* Add environment variables in the Render dashboard:
+5. Update Supabase OAuth redirect URLs (in Supabase dashboard → Authentication → URL Configuration):
+   - Add `https://YOUR_RENDER_DOMAIN/callback.html`
+   - Add `https://YOUR_RENDER_DOMAIN` as Site URL
 
-  * `SUPABASE_URL`
-  * `SUPABASE_ANON_KEY`
-  * `PORT` (Render sets this automatically)
-
-Also update Supabase OAuth Redirect URLs for production:
-
-* Add `https://YOUR_RENDER_DOMAIN/callback.html` in:
-
-  * Supabase → Authentication → URL Configuration
-  * Supabase → GitHub Provider settings
+> **Note:** The OAuth `redirectTo` URL is set dynamically using `window.location.origin` in
+> `login.html`, so it works automatically on both localhost and production — no code change needed.
 
 ---
 
 ## License
 
-Educational/personal project.
-
----
+Educational / personal project.
