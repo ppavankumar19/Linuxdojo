@@ -528,9 +528,8 @@
         <span id="brandText"></span>
         <span class="brand-cursor"></span>
       </a>
-      <div class="nav-links">
+      <div id="navMount" style="display:flex;align-items:center;gap:10px;">
         <a href="/" class="btn">← Back</a>
-        <a href="/login.html" class="btn">Login</a>
       </div>
     </div>
   </nav>
@@ -562,14 +561,31 @@
   </script>
 
   <script type="module">
-    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
-    const cfg = window.__CONFIG__;
-    const supabase = createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
+    import { getSupabase, getSessionAndRole, renderNav, escapeHtml } from "/js/app.js";
+
+    const supabase = getSupabase();
+    const navMount = document.getElementById("navMount");
+
+    // Render auth-aware nav (appends to existing "← Back" button)
+    getSessionAndRole(supabase).then(state => {
+      // Append auth buttons after the back button
+      const backBtn = navMount.querySelector("a");
+      const tmpDiv = document.createElement("div");
+      tmpDiv.style.cssText = "display:flex;align-items:center;gap:10px;";
+      renderNav(tmpDiv, state);
+      while (tmpDiv.firstChild) navMount.appendChild(tmpDiv.firstChild);
+
+      const logoutBtn = document.getElementById("navLogout");
+      if (logoutBtn) {
+        logoutBtn.addEventListener("click", async () => {
+          await supabase.auth.signOut();
+          location.href = "/";
+        });
+      }
+    });
 
     const params = new URLSearchParams(location.search);
     const slug = params.get("slug");
-
-    function escapeHtml(s){ return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 
     function normalizeAsciinema(url){
       url = (url||"").trim();
