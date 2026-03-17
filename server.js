@@ -12,18 +12,17 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Serve config dynamically BEFORE static files so this route takes precedence.
-// Set SUPABASE_URL, SUPABASE_ANON_KEY, and optionally SITE_URL in your .env (or Render env vars).
+// Set SUPABASE_URL and SUPABASE_ANON_KEY in your .env (or Render env vars).
 app.get("/config.js", (req, res) => {
   const url  = process.env.SUPABASE_URL      || "";
   const anon = process.env.SUPABASE_ANON_KEY || "";
-  const site = process.env.SITE_URL          || "";
 
   if (!url || !anon) {
     console.warn("⚠️  SUPABASE_URL or SUPABASE_ANON_KEY is not set in environment variables.");
   }
 
   res.type("application/javascript").send(
-    `window.__CONFIG__ = ${JSON.stringify({ SUPABASE_URL: url, SUPABASE_ANON_KEY: anon, SITE_URL: site })};`
+    `window.__CONFIG__ = ${JSON.stringify({ SUPABASE_URL: url, SUPABASE_ANON_KEY: anon })};`
   );
 });
 

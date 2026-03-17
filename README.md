@@ -56,7 +56,8 @@ linuxdojo/
 │       └── app.js        # Shared: getSupabase, getSessionAndRole, renderNav, escapeHtml
 ├── server.js             # Express: serves /config.js dynamically + static files
 ├── package.json
-└── .env                  # Local secrets — NOT committed (see .gitignore)
+├── .env                  # ← Create this in the project root for local dev (see below)
+└── .gitignore            # .env is excluded from git
 ```
 
 ---
@@ -70,7 +71,7 @@ Browser requests /config.js
         │
         ▼
 server.js: GET /config.js route (runs BEFORE static middleware)
-        │   Reads SUPABASE_URL, SUPABASE_ANON_KEY, SITE_URL from env vars
+        │   Reads SUPABASE_URL, SUPABASE_ANON_KEY from env vars
         │   Returns: window.__CONFIG__ = { SUPABASE_URL, SUPABASE_ANON_KEY }
         ▼
 Browser: window.__CONFIG__ is available
@@ -183,7 +184,14 @@ SELECT email, role FROM public.profiles;
 
 ## Environment Variables
 
-Create a `.env` file in the project root for local development:
+Create a `.env` file **in the project root** (same folder as `server.js` and `package.json`):
+
+```
+linuxdojo/
+├── .env          ← here
+├── server.js
+└── package.json
+```
 
 ```env
 SUPABASE_URL=https://YOUR_PROJECT_ID.supabase.co
@@ -193,6 +201,7 @@ PORT=4000
 
 > `SUPABASE_ANON_KEY` is the **public anon key** — safe to expose in client-side code.
 > The server serves it to the browser via `/config.js`.
+> `.env` is listed in `.gitignore` and will never be committed.
 
 ---
 
