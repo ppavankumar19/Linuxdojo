@@ -9,6 +9,11 @@ A learning-focused web app to master **Linux/Ubuntu commands** with:
 
 Built with **static HTML + CSS** on the frontend, **Node.js (Express)** as the server, and **Supabase** for the database, auth, and security.
 
+> **Documentation:**
+> - [`specifications.md`](./specifications.md) — Full technical spec (architecture, DB schema, security, pages)
+> - [`scope.md`](./scope.md) — What is and isn't in scope, constraints, success criteria
+> - [`features.md`](./features.md) — Current features with workflows + full future feature roadmap
+
 ---
 
 ## Tech Stack
@@ -255,4 +260,4 @@ App runs at: [http://localhost:4000](http://localhost:4000)
 
 ## License
 
-Educational / personal project.
+Educational / personal project. All rights reserved.
