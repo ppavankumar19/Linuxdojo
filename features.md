@@ -20,17 +20,21 @@ User opens home page
   → app.js creates Supabase client
   → SELECT * FROM commands WHERE published = true
   → If logged in: SELECT command_slug FROM progress WHERE is_completed = true
-  → Render command cards (with "Done" badge if completed)
+  → Render platform tabs (All / Linux / Windows / macOS / Git Bash)
+  → Render command cards (with "Done" badge and platform badge)
+  → User clicks platform tab → filter by platform tag
   → User types in search bar → real-time JS filter on title/slug/syntax
-  → User clicks tag chip → filter by tag
+  → User clicks tag chip → filter by category tag
   → User clicks command card → navigate to /command.html?slug=<slug>
 ```
 
 **Key behaviors:**
+- **Platform tabs** filter commands by platform tag (linux/windows/macos/git-bash)
 - Search is client-side (no extra DB queries)
-- Tag filter chips are auto-generated from all unique tags in loaded commands
+- Tag filter chips are auto-generated from non-platform tags
 - Difficulty label derived from tags (Beginner / Intermediate / Advanced)
 - Stats bar shows total commands, completed count, category count
+- Command cards show platform badge alongside syntax and slug badges
 
 ---
 
@@ -156,22 +160,25 @@ User navigates to /me.html
 Admin navigates to /admin.html
   → getSessionAndRole() → if role != 'admin', redirect to /login.html
   → SELECT * FROM commands (all, including unpublished)
-  → Render command list (right panel)
-  → Render empty form (left panel)
+  → Render command list with platform badges (right panel)
+  → Render empty form with platform dropdown (left panel)
 
 Create new command:
-  → Fill form (title, slug, syntax, description, asciinema URL, video URL, tags, lesson steps)
+  → Fill form (title, slug, syntax, description, asciinema URL, video URL, platform, tags, lesson steps)
+  → Select platform (Linux / Windows / macOS / Git Bash) — required
   → Toggle "Published" checkbox
   → Click "Save"
-  → Validate all required fields
+  → Validate all required fields (including platform)
+  → Platform tag auto-injected as first tag
   → INSERT INTO commands (...)
   → Reload list
 
 Edit command:
   → Click "Edit" on a command in the list
-  → Form populates with existing values
-  → Admin modifies fields
+  → Form populates with existing values (platform auto-detected from tags)
+  → Admin modifies fields (including platform dropdown)
   → Click "Save"
+  → Platform tag replaced/updated in tags array
   → UPDATE commands SET ... WHERE id = $id
   → Reload list
 
@@ -596,7 +603,8 @@ Send transactional emails (welcome email, streak reminder, path completion).
                         │  ┌─────────────────────────────────────┐   │
                         │  │         Page-Level Logic             │   │
                         │  │                                      │   │
-                        │  │  index.html → browse/search cmds     │   │
+                        │  │  index.html → platform tabs +        │   │
+                        │  │               browse/search cmds     │   │
                         │  │  command.html → view detail/media    │   │
                         │  │  practice.html → step-by-step input  │   │
                         │  │  me.html → view own progress         │   │
