@@ -2,7 +2,7 @@
 
 ## Purpose
 
-LinuxDojo is a self-paced Linux command learning platform. The goal is to help beginners and intermediate users learn Linux/Ubuntu commands through browsing, reading, watching demos, and hands-on guided practice — all tracked per-user.
+LinuxDojo is a self-paced terminal command learning platform. The goal is to help beginners and intermediate users learn commands across **Linux, Windows, macOS, and Git Bash** through browsing, reading, watching demos, and hands-on guided practice — all tracked per-user.
 
 ---
 
@@ -11,12 +11,14 @@ LinuxDojo is a self-paced Linux command learning platform. The goal is to help b
 ### In Scope
 
 #### Content
-- Linux/Ubuntu command library managed by admins
-- Each command has: title, slug, syntax, description, asciinema demo, video, tags, and lesson steps
+- Multi-platform command library managed by admins (Linux, Windows, macOS, Git Bash)
+- Each command has: title, slug, syntax, description, asciinema demo, video, platform, tags, and lesson steps
 - Commands are published/unpublished by admins — only published commands are visible to users
+- Platform is stored as a tag — admin dashboard enforces platform selection via dropdown
 
 #### Learning Experience
 - Browse and search commands on the home page
+- **Filter commands by platform** (Linux / Windows / macOS / Git Bash / All)
 - Filter commands by category tags
 - View command detail: description, asciinema terminal demo, video explanation
 - Guided practice: step-by-step command input with validation and hints
@@ -82,6 +84,7 @@ The following are explicitly **not included** in v1.0 and are candidates for fut
 
 ### Content
 - All command content is manually entered by admins via the admin dashboard
+- Every command must be assigned a platform (linux, windows, macos, or git-bash)
 - Asciinema recordings must be hosted on asciinema.org
 - Videos must be on YouTube, Vimeo, or a direct-link host
 
