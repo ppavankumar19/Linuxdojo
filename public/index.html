@@ -783,6 +783,53 @@
         font-weight:600;
       }
 
+      /* ══════════════════════════════════════════  PLATFORM TABS */
+      .platform-section { margin-bottom:20px; }
+
+      .platforms { display:flex; gap:8px; flex-wrap:wrap; }
+
+      .platform-tab {
+        display:inline-flex;
+        align-items:center;
+        gap:8px;
+        padding:11px 22px;
+        border-radius:10px;
+        border:1px solid var(--border2);
+        background:var(--surface);
+        color:var(--ink2);
+        cursor:pointer;
+        font-family:'Space Mono', monospace;
+        font-size:12px;
+        font-weight:700;
+        letter-spacing:1px;
+        text-transform:uppercase;
+        white-space:nowrap;
+        user-select:none;
+        transition:background .22s ease, border-color .22s ease,
+                   color .22s ease, transform .18s ease, box-shadow .22s ease;
+      }
+
+      .platform-tab:hover {
+        background:var(--lime-dim);
+        border-color:var(--lime);
+        color:var(--lime);
+        transform:translateY(-2px);
+        box-shadow:0 4px 14px rgba(201,255,71,0.14);
+      }
+      .platform-tab:active{transform:translateY(0);}
+
+      .platform-tab.active {
+        background:var(--lime-dim);
+        border-color:var(--lime);
+        color:var(--lime);
+        font-weight:700;
+        box-shadow:0 0 0 1px rgba(201,255,71,0.22),
+                   0 0 18px rgba(201,255,71,0.15),
+                   inset 0 1px 0 rgba(201,255,71,0.12);
+      }
+
+      .platform-tab .tab-icon { font-size:15px; line-height:1; }
+
       /* ══════════════════════════════════════════  SCROLLBAR */
       ::-webkit-scrollbar{width:5px; height:5px;}
       ::-webkit-scrollbar-track{background:transparent;}
@@ -821,12 +868,12 @@
 
         <h1>
           Master<br>
-          <span class="hl-lime">Linux</span>
+          <span class="hl-lime">Terminal</span>
           <span class="hl-cyan"> Commands</span>
         </h1>
 
         <p class="hero-desc">
-          Search, explore, and practice real Linux commands. Structured lessons, hands-on exercises, and full progress tracking.
+          Search, explore, and practice commands across Linux, Windows, macOS & Git Bash. Structured lessons, hands-on exercises, and full progress tracking.
         </p>
 
         <div class="stats-row">
@@ -843,6 +890,14 @@
             <div class="stat-lbl">Categories</div>
           </div>
         </div>
+      </div>
+
+      <!-- Platform Selector -->
+      <div class="platform-section">
+        <div class="sec-label">
+          <span class="sec-label-sym">></span> Select Platform
+        </div>
+        <div id="platforms" class="platforms"></div>
       </div>
 
       <!-- Search -->
@@ -912,9 +967,18 @@
       const statDone   = document.getElementById("stat-done");
       const statTags   = document.getElementById("stat-tags");
 
-      let all          = [];
-      let activeTag    = null;
-      let completedSet = new Set();
+      let all            = [];
+      let activeTag      = null;
+      let activePlatform = null;
+      let completedSet   = new Set();
+
+      const PLATFORMS = [
+        { key: '',          label: 'All',      icon: '&#9776;' },
+        { key: 'linux',     label: 'Linux',    icon: '&#128039;' },
+        { key: 'windows',   label: 'Windows',  icon: '&#9638;' },
+        { key: 'macos',     label: 'macOS',    icon: '&#63743;' },
+        { key: 'git-bash',  label: 'Git Bash', icon: '&#62;_' }
+      ];
 
       /* ── Difficulty label helper ─── */
       function difficultyLabel(tags) {
@@ -952,10 +1016,14 @@
           return;
         }
 
+        const PLAT_TAGS = ['linux','windows','macos','git-bash'];
+
         listEl.innerHTML = items.map(c => {
           const diff = difficultyLabel(c.tags);
           const cat  = categoryFromTags(c.tags);
-          const tagCount = (c.tags || []).length;
+          const nonPlat = (c.tags || []).filter(t => !PLAT_TAGS.includes(String(t).toLowerCase()));
+          const platTag = (c.tags || []).find(t => PLAT_TAGS.includes(String(t).toLowerCase()));
+          const tagCount = nonPlat.length;
 
           return `
           <a class="item" href="/command.html?slug=${encodeURIComponent(c.slug)}">
@@ -970,10 +1038,11 @@
                 <div class="item-meta">
                   <span class="badge badge-syntax">${escapeHtml(c.syntax)}</span>
                   <span class="badge badge-slug">/${escapeHtml(c.slug)}</span>
+                  ${platTag ? `<span class="badge" style="color:var(--amber);border-color:rgba(255,208,112,0.35);background:rgba(255,208,112,0.1);text-transform:uppercase;font-size:10px;">${escapeHtml(platTag)}</span>` : ''}
                 </div>
 
                 <div class="item-tags">
-                  ${(c.tags || []).slice(0,8).map(t =>
+                  ${nonPlat.slice(0,8).map(t =>
                     `<span class="badge badge-tag">${escapeHtml(t)}</span>`
                   ).join('')}
                 </div>
@@ -985,16 +1054,16 @@
             <!-- Extra info row -->
             <div class="item-extra">
               <div class="item-extra-cell">
+                <span class="extra-key">Platform</span>
+                <span class="extra-val amber">${platTag ? escapeHtml(platTag.toUpperCase()) : '—'}</span>
+              </div>
+              <div class="item-extra-cell">
                 <span class="extra-key">Difficulty</span>
                 <span class="extra-val ${diff.cls}">${diff.label}</span>
               </div>
               <div class="item-extra-cell">
                 <span class="extra-key">Category</span>
                 <span class="extra-val cyan">${escapeHtml(cat)}</span>
-              </div>
-              <div class="item-extra-cell">
-                <span class="extra-key">Tags</span>
-                <span class="extra-val amber">${tagCount} tag${tagCount !== 1 ? 's' : ''}</span>
               </div>
               <div class="item-extra-cell">
                 <span class="extra-key">Lesson</span>
@@ -1009,6 +1078,12 @@
       function filtered() {
         const q = (qEl.value || '').trim().toLowerCase();
         let items = all.slice();
+
+        if (activePlatform) {
+          items = items.filter(c =>
+            (c.tags || []).map(x => String(x).toLowerCase()).includes(activePlatform)
+          );
+        }
 
         if (activeTag) {
           items = items.filter(c =>
@@ -1027,10 +1102,33 @@
         renderList(items);
       }
 
+      /* ── Platform tabs ─── */
+      const platformsEl = document.getElementById("platforms");
+
+      function buildPlatforms() {
+        platformsEl.innerHTML = PLATFORMS.map(p =>
+          `<button class="platform-tab ${activePlatform === (p.key || null) ? 'active' : ''}" data-platform="${p.key}">
+            <span class="tab-icon">${p.icon}</span> ${escapeHtml(p.label)}
+          </button>`
+        ).join('');
+
+        platformsEl.querySelectorAll('.platform-tab').forEach(tab => {
+          tab.addEventListener('click', () => {
+            activePlatform = tab.getAttribute('data-platform') || null;
+            buildPlatforms();
+            filtered();
+          });
+        });
+      }
+
       /* ── Chips ─── */
       function buildChips() {
+        const PLAT_SET = new Set(['linux','windows','macos','git-bash']);
         const set = new Set();
-        all.forEach(c => (c.tags || []).forEach(t => set.add(String(t).toLowerCase())));
+        all.forEach(c => (c.tags || []).forEach(t => {
+          const low = String(t).toLowerCase();
+          if (!PLAT_SET.has(low)) set.add(low);
+        }));
         const tags = Array.from(set).sort();
 
         if (statTags) statTags.textContent = tags.length;
@@ -1095,6 +1193,7 @@
 
         if (statDone) statDone.textContent = completedSet.size;
 
+        buildPlatforms();
         buildChips();
         filtered();
       }
@@ -1103,6 +1202,8 @@
       clearBtn.addEventListener('click', () => {
         qEl.value = '';
         activeTag = null;
+        activePlatform = null;
+        buildPlatforms();
         buildChips();
         filtered();
       });
