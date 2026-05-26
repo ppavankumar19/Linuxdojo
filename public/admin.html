@@ -348,6 +348,21 @@
       box-shadow: 0 0 0 3px rgba(201,255,71,0.1);
     }
 
+    select.input {
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23a4b8d8' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      padding-right: 40px;
+    }
+
+    select.input option {
+      background: var(--surface);
+      color: var(--ink);
+    }
+
     textarea.input {
       font-family: 'Space Mono', monospace;
       font-size: 13px;
@@ -596,6 +611,17 @@
           </div>
 
           <div class="form-group">
+            <label class="form-label">Platform (required)</label>
+            <select class="input" id="platform" required>
+              <option value="">Select platform...</option>
+              <option value="linux">Linux</option>
+              <option value="windows">Windows</option>
+              <option value="macos">macOS</option>
+              <option value="git-bash">Git Bash</option>
+            </select>
+          </div>
+
+          <div class="form-group">
             <label class="form-label">Tags (optional, comma separated)</label>
             <input class="input" id="tags" placeholder="filesystem, navigation" />
           </div>
@@ -688,9 +714,12 @@
     const descEl = document.getElementById("description");
     const asciEl = document.getElementById("asciinema_url");
     const vidEl = document.getElementById("video_url");
+    const platformEl = document.getElementById("platform");
     const tagsEl = document.getElementById("tags");
     const stepsEl = document.getElementById("lesson_steps");
     const pubEl = document.getElementById("published");
+
+    const PLATFORM_TAGS = ['linux', 'windows', 'macos', 'git-bash'];
 
     const asciBox = document.getElementById("asciBox");
     const vidBox = document.getElementById("vidBox");
@@ -808,6 +837,7 @@
       descEl.value = "";
       asciEl.value = "";
       vidEl.value = "";
+      platformEl.value = "";
       tagsEl.value = "";
       stepsEl.value = "";
       pubEl.checked = false;
@@ -818,7 +848,7 @@
       listEl.innerHTML = `<div class="item small">Loading...</div>`;
       const { data, error } = await supabase
         .from("commands")
-        .select("id,slug,title,syntax,published,updated_at")
+        .select("id,slug,title,syntax,tags,published,updated_at")
         .order("updated_at", { ascending: false });
 
       if (error) {
@@ -831,11 +861,13 @@
         return;
       }
 
-      listEl.innerHTML = data.map(c => `
+      listEl.innerHTML = data.map(c => {
+        const plat = (c.tags || []).find(t => PLATFORM_TAGS.includes(String(t).toLowerCase())) || '';
+        return `
         <div class="item">
           <div class="split">
             <div>
-              <div class="title">${escapeHtml(c.title)} ${c.published ? `<span class="badge published">published</span>` : `<span class="badge draft">draft</span>`}</div>
+              <div class="title">${escapeHtml(c.title)} ${c.published ? `<span class="badge published">published</span>` : `<span class="badge draft">draft</span>`} ${plat ? `<span class="badge" style="color:var(--cyan);border-color:rgba(46,255,246,0.35);background:var(--cyan-dim);text-transform:uppercase;">${escapeHtml(plat)}</span>` : ''}</div>
               <div class="small" style="margin-top:10px;">
                 <span class="badge">${escapeHtml(c.syntax)}</span>
                 <span class="badge">/${escapeHtml(c.slug)}</span>
@@ -851,7 +883,7 @@
             </div>
           </div>
         </div>
-      `).join("");
+      `}).join("");
 
       listEl.querySelectorAll("button[data-act]").forEach(btn => {
         btn.addEventListener("click", async () => {
@@ -883,7 +915,10 @@
             descEl.value = cmd.description || "";
             asciEl.value = cmd.asciinema_url || "";
             vidEl.value = cmd.video_url || "";
-            tagsEl.value = (cmd.tags || []).join(", ");
+            const allTags = cmd.tags || [];
+            const detectedPlatform = allTags.find(t => PLATFORM_TAGS.includes(t.toLowerCase())) || "";
+            platformEl.value = detectedPlatform.toLowerCase();
+            tagsEl.value = allTags.filter(t => !PLATFORM_TAGS.includes(t.toLowerCase())).join(", ");
             stepsEl.value = (cmd.lesson_steps || []).join("\n");
             pubEl.checked = !!cmd.published;
             renderPreviews();
@@ -898,6 +933,10 @@
       formMsg.textContent = "";
       formMsg.classList.remove('error');
 
+      const platform = platformEl.value;
+      let tags = parseTags(tagsEl.value).filter(t => !PLATFORM_TAGS.includes(t));
+      if (platform) tags.unshift(platform);
+
       const payload = {
         title: titleEl.value.trim(),
         slug: slugEl.value.trim().toLowerCase(),
@@ -905,13 +944,13 @@
         description: descEl.value.trim(),
         asciinema_url: normalizeAsciinema(asciEl.value),
         video_url: normalizeVideo(vidEl.value),
-        tags: parseTags(tagsEl.value),
+        tags: tags,
         lesson_steps: parseSteps(stepsEl.value),
         published: pubEl.checked
       };
 
-      if (!payload.title || !payload.slug || !payload.syntax || !payload.description || !payload.asciinema_url || !payload.video_url) {
-        formMsg.textContent = "Please fill all required fields";
+      if (!payload.title || !payload.slug || !payload.syntax || !payload.description || !payload.asciinema_url || !payload.video_url || !platform) {
+        formMsg.textContent = "Please fill all required fields (including Platform)";
         formMsg.classList.add('error');
         return;
       }
