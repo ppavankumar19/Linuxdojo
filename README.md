@@ -1,7 +1,10 @@
-# LinuxDojo 🐧
+# LinuxDojo
 
-A learning-focused web app to master **Linux/Ubuntu commands** with:
-- Command browser with search and category filters
+A learning-focused web app to master **terminal commands** across multiple platforms:
+
+**Supported Platforms:** Linux, Windows (CMD/PowerShell), macOS, Git Bash
+
+- Command browser with search, platform filter, and category filters
 - Asciinema terminal demos + video explanations
 - Guided practice mode with step-by-step lessons
 - Per-user progress tracking (completed / in-progress)
@@ -29,10 +32,26 @@ Built with **static HTML + CSS** on the frontend, **Node.js (Express)** as the s
 
 ---
 
+## Platforms
+
+LinuxDojo supports commands across four platforms. Each command is tagged with its platform, and users can filter by platform on the home page.
+
+| Platform   | Tag         | Description                                           |
+|------------|-------------|-------------------------------------------------------|
+| Linux      | `linux`     | Ubuntu/Debian shell commands (bash)                   |
+| Windows    | `windows`   | CMD and PowerShell commands                           |
+| macOS      | `macos`     | macOS Terminal commands (zsh/bash)                    |
+| Git Bash   | `git-bash`  | Git Bash on Windows (MINGW64 environment)            |
+
+Platform is stored as a tag in the `tags` array on each command. The admin dashboard includes a dedicated Platform dropdown to ensure every command is tagged with its platform.
+
+---
+
 ## Features
 
 ### User
-- Browse all published Linux commands on the home page
+- Browse all published commands on the home page
+- **Filter by platform** (Linux / Windows / macOS / Git Bash)
 - Search by name, slug, or syntax; filter by category tag
 - Open a command to view description, asciinema demo, and video
 - Practice commands in guided step-by-step mode
@@ -41,6 +60,7 @@ Built with **static HTML + CSS** on the frontend, **Node.js (Express)** as the s
 ### Admin
 - Admin-only access to `/admin.html` (role check via Supabase RLS)
 - Create, edit, publish/unpublish, and delete commands
+- **Select platform** (Linux / Windows / macOS / Git Bash) per command
 - Live preview for asciinema embed and video embed
 
 ---
@@ -50,8 +70,8 @@ Built with **static HTML + CSS** on the frontend, **Node.js (Express)** as the s
 ```
 linuxdojo/
 ├── public/
-│   ├── index.html        # Home: browse, search, filter commands
-│   ├── command.html      # Command detail: description, media
+│   ├── index.html        # Home: browse, search, platform filter, category filter
+│   ├── command.html      # Command detail: description, media, platform badge
 │   ├── practice.html     # Guided practice mode
 │   ├── me.html           # My Progress (auth required)
 │   ├── login.html        # GitHub OAuth sign-in
@@ -61,7 +81,7 @@ linuxdojo/
 │       └── app.js        # Shared: getSupabase, getSessionAndRole, renderNav, escapeHtml
 ├── server.js             # Express: serves /config.js dynamically + static files
 ├── package.json
-├── .env                  # ← Create this in the project root for local dev (see below)
+├── .env                  # Create this in the project root for local dev (see below)
 └── .gitignore            # .env is excluded from git
 ```
 
@@ -69,42 +89,42 @@ linuxdojo/
 
 ## Architecture & Data Flow
 
-### Backend → Frontend Config Flow
+### Backend -> Frontend Config Flow
 
 ```
 Browser requests /config.js
-        │
-        ▼
+        |
+        v
 server.js: GET /config.js route (runs BEFORE static middleware)
-        │   Reads SUPABASE_URL, SUPABASE_ANON_KEY from env vars
-        │   Returns: window.__CONFIG__ = { SUPABASE_URL, SUPABASE_ANON_KEY }
-        ▼
+        |   Reads SUPABASE_URL, SUPABASE_ANON_KEY from env vars
+        |   Returns: window.__CONFIG__ = { SUPABASE_URL, SUPABASE_ANON_KEY }
+        v
 Browser: window.__CONFIG__ is available
-        │
-        ▼
-public/js/app.js: getSupabase() reads window.__CONFIG__ → creates Supabase client
+        |
+        v
+public/js/app.js: getSupabase() reads window.__CONFIG__ -> creates Supabase client
 ```
 
 > The `/config.js` route in server.js is registered **before** `express.static` so it always
 > serves the dynamic version from environment variables, not a hardcoded static file.
 
-### Frontend → Supabase Data Flow
+### Frontend -> Supabase Data Flow
 
 The frontend communicates **directly with Supabase** via the Supabase JS client (CDN).
-The Express server only serves files and the config — it does not proxy database queries.
+The Express server only serves files and the config -- it does not proxy database queries.
 
 ```
-User action (search, practice, login, etc.)
-        │
-        ▼
+User action (search, practice, login, platform filter, etc.)
+        |
+        v
 Browser: Supabase JS client (from CDN)
-        │   Authenticated via GitHub OAuth session cookie (managed by Supabase)
-        │   All writes/reads go through RLS policies
-        ▼
+        |   Authenticated via GitHub OAuth session cookie (managed by Supabase)
+        |   All writes/reads go through RLS policies
+        v
 Supabase Postgres
-  ├── commands  — Linux command content (read: public; write: admin RLS)
-  ├── profiles  — One row per user, stores role (read: own row only)
-  └── progress  — Per-user step tracking (read/write: own rows only via RLS)
+  |-- commands  -- Command content for all platforms (read: public; write: admin RLS)
+  |-- profiles  -- One row per user, stores role (read: own row only)
+  +-- progress  -- Per-user step tracking (read/write: own rows only via RLS)
 ```
 
 ### Auth Flow (GitHub OAuth)
@@ -112,25 +132,43 @@ Supabase Postgres
 ```
 1. User clicks "Login" on /login.html
 2. Browser calls supabase.auth.signInWithOAuth({ provider: "github", redirectTo: window.location.origin + "/callback.html" })
-3. GitHub OAuth → redirects back to /callback.html
-4. callback.html calls supabase.auth.getSession() — session is auto-stored by Supabase
+3. GitHub OAuth -> redirects back to /callback.html
+4. callback.html calls supabase.auth.getSession() -- session is auto-stored by Supabase
 5. On success: redirects to / (home page)
 6. Supabase trigger creates a row in public.profiles on first login
 7. app.js getSessionAndRole() reads profiles.role for admin check
 ```
 
+### Platform Filtering Flow
+
+```
+Home page loads all published commands
+        |
+        v
+User clicks platform tab (Linux / Windows / macOS / Git Bash / All)
+        |
+        v
+Client-side filter: commands where tags include the selected platform
+        |
+        v
+Filtered commands rendered in the list
+        |   (tag chips also exclude platform tags to avoid duplication)
+        v
+User can further filter by category tag and search text
+```
+
 ### Page Navigation Flow
 
 ```
-/                    Home page — browse + search commands
-  │
-  ├─ /command.html?slug=cd    Command detail (description, asciinema, video)
-  │        └─ /practice.html?slug=cd    Guided practice for that command
-  │
-  ├─ /me.html                  My Progress (auth required — redirects to login if not)
-  ├─ /login.html               GitHub OAuth login
-  ├─ /callback.html            OAuth redirect handler (auto-redirects to /)
-  └─ /admin.html               Admin dashboard (admin role required)
+/                    Home page -- browse + search + platform filter
+  |
+  |-- /command.html?slug=cd    Command detail (description, asciinema, video, platform badge)
+  |        +-- /practice.html?slug=cd    Guided practice for that command
+  |
+  |-- /me.html                  My Progress (auth required -- redirects to login if not)
+  |-- /login.html               GitHub OAuth login
+  |-- /callback.html            OAuth redirect handler (auto-redirects to /)
+  +-- /admin.html               Admin dashboard (admin role required, platform dropdown)
 ```
 
 ---
@@ -139,7 +177,7 @@ Supabase Postgres
 
 ### Tables
 
-**`profiles`** — one row per authenticated user (auto-created by trigger)
+**`profiles`** -- one row per authenticated user (auto-created by trigger)
 ```sql
 id         uuid  PRIMARY KEY (references auth.users)
 email      text
@@ -147,7 +185,7 @@ role       text  DEFAULT 'user'  -- 'user' | 'admin'
 created_at timestamptz
 ```
 
-**`commands`** — Linux command content
+**`commands`** -- command content (all platforms)
 ```sql
 id             uuid  PRIMARY KEY DEFAULT gen_random_uuid()
 slug           text  UNIQUE NOT NULL
@@ -156,14 +194,14 @@ syntax         text  NOT NULL
 description    text
 asciinema_url  text
 video_url      text
-tags           text[]
+tags           text[]     -- includes platform tag (linux/windows/macos/git-bash) + category tags
 lesson_steps   text[]
 published      boolean DEFAULT false
 created_at     timestamptz
 updated_at     timestamptz
 ```
 
-**`progress`** — per-user practice tracking
+**`progress`** -- per-user practice tracking
 ```sql
 id            uuid  PRIMARY KEY DEFAULT gen_random_uuid()
 user_id       uuid  REFERENCES auth.users (UNIQUE with command_slug)
@@ -173,6 +211,17 @@ is_completed  boolean DEFAULT false
 completed_at  timestamptz
 updated_at    timestamptz
 ```
+
+### Platform Tags Convention
+
+Platform is stored as the **first tag** in the `tags` array. The admin dashboard enforces this via a required Platform dropdown. Valid platform tags:
+
+| Tag        | Platform                        |
+|------------|---------------------------------|
+| `linux`    | Linux / Ubuntu / Debian (bash)  |
+| `windows`  | Windows CMD / PowerShell        |
+| `macos`    | macOS Terminal (zsh/bash)       |
+| `git-bash` | Git Bash (MINGW64 on Windows)   |
 
 ### Promote a user to Admin
 
@@ -193,7 +242,7 @@ Create a `.env` file **in the project root** (same folder as `server.js` and `pa
 
 ```
 linuxdojo/
-├── .env          ← here
+├── .env
 ├── server.js
 └── package.json
 ```
@@ -204,7 +253,7 @@ SUPABASE_ANON_KEY=YOUR_ANON_PUBLIC_KEY
 PORT=4000
 ```
 
-> `SUPABASE_ANON_KEY` is the **public anon key** — safe to expose in client-side code.
+> `SUPABASE_ANON_KEY` is the **public anon key** -- safe to expose in client-side code.
 > The server serves it to the browser via `/config.js`.
 > `.env` is listed in `.gitignore` and will never be committed.
 
@@ -225,17 +274,17 @@ App runs at: [http://localhost:4000](http://localhost:4000)
 
 ## Routes
 
-| URL                            | Description                            |
-|--------------------------------|----------------------------------------|
-| `/`                            | Home — command list, search, filter    |
-| `/login.html`                  | GitHub OAuth sign-in                   |
-| `/callback.html`               | OAuth redirect handler                 |
-| `/command.html?slug=<slug>`    | Command detail page                    |
-| `/practice.html?slug=<slug>`   | Guided practice for a command          |
-| `/practice.html`               | Free practice mode (no slug)           |
-| `/me.html`                     | My Progress (login required)           |
-| `/admin.html`                  | Admin dashboard (admin role required)  |
-| `/config.js`                   | Dynamic config endpoint (server-side)  |
+| URL                            | Description                                 |
+|--------------------------------|---------------------------------------------|
+| `/`                            | Home -- command list, search, platform filter |
+| `/login.html`                  | GitHub OAuth sign-in                        |
+| `/callback.html`               | OAuth redirect handler                      |
+| `/command.html?slug=<slug>`    | Command detail page (with platform badge)   |
+| `/practice.html?slug=<slug>`   | Guided practice for a command               |
+| `/practice.html`               | Free practice mode (no slug)                |
+| `/me.html`                     | My Progress (login required)                |
+| `/admin.html`                  | Admin dashboard (admin role required)       |
+| `/config.js`                   | Dynamic config endpoint (server-side)       |
 
 ---
 
@@ -249,12 +298,12 @@ App runs at: [http://localhost:4000](http://localhost:4000)
    - `SUPABASE_ANON_KEY`
    - `PORT` (Render sets this automatically)
 
-5. Update Supabase OAuth redirect URLs (in Supabase dashboard → Authentication → URL Configuration):
+5. Update Supabase OAuth redirect URLs (in Supabase dashboard -> Authentication -> URL Configuration):
    - Add `https://YOUR_RENDER_DOMAIN/callback.html`
    - Add `https://YOUR_RENDER_DOMAIN` as Site URL
 
 > **Note:** The OAuth `redirectTo` URL is set dynamically using `window.location.origin` in
-> `login.html`, so it works automatically on both localhost and production — no code change needed.
+> `login.html`, so it works automatically on both localhost and production -- no code change needed.
 
 ---
 
