@@ -2,7 +2,7 @@
 
 ## Overview
 
-LinuxDojo is a Linux command learning platform. Users browse, search, and practice Linux commands through a guided step-by-step system. Progress is tracked per-user via Supabase. An admin dashboard allows full CRUD management of command content.
+LinuxDojo is a multi-platform terminal command learning platform. Users browse, search, and practice commands for **Linux, Windows, macOS, and Git Bash** through a guided step-by-step system. Commands are filtered by platform and category. Progress is tracked per-user via Supabase. An admin dashboard allows full CRUD management of command content.
 
 ---
 
@@ -29,7 +29,7 @@ Browser
   └── Supabase JS client (CDN)
         ├── Auth: GitHub OAuth (session managed by Supabase)
         └── DB: Direct queries to Supabase Postgres
-                ├── commands  (content)
+                ├── commands  (content — Linux, Windows, macOS, Git Bash)
                 ├── profiles  (user roles)
                 └── progress  (practice tracking)
 
@@ -39,6 +39,19 @@ Express Backend (server.js)
 ```
 
 > The backend does NOT proxy database queries. All DB access happens from the browser via the Supabase JS client, enforced by RLS policies.
+
+### Platform System
+
+Commands are organized by platform using a tag-based convention. The first tag in the `tags` array identifies the platform:
+
+| Platform Tag | Platform                          |
+|-------------|-----------------------------------|
+| `linux`     | Linux / Ubuntu / Debian (bash)    |
+| `windows`   | Windows CMD / PowerShell          |
+| `macos`     | macOS Terminal (zsh/bash)         |
+| `git-bash`  | Git Bash (MINGW64 on Windows)     |
+
+The home page renders platform tabs for filtering. The admin dashboard includes a required Platform dropdown that auto-injects the platform tag. Category tags (e.g., `filesystem`, `networking`) are stored alongside the platform tag in the same `tags` array.
 
 ---
 
@@ -162,7 +175,7 @@ Auto-created on first login via Supabase trigger.
 | description    | text        |                     | Full explanation (HTML safe)    |
 | asciinema_url  | text        |                     | Link or embed URL               |
 | video_url      | text        |                     | YouTube, Vimeo, or direct URL   |
-| tags           | text[]      |                     | Categories / difficulty labels  |
+| tags           | text[]      |                     | First tag = platform (linux/windows/macos/git-bash), rest = categories |
 | lesson_steps   | text[]      |                     | Ordered practice commands       |
 | published      | boolean     | DEFAULT false       | Only published cmds shown publicly |
 | created_at     | timestamptz | DEFAULT now()       |                                 |
@@ -243,9 +256,10 @@ UPDATE public.profiles SET role = 'admin' WHERE email = 'user@example.com';
 
 **UI Components:**
 - Hero: title, description, stats (total commands, completed, categories)
+- **Platform tabs: All / Linux / Windows / macOS / Git Bash** (filters by platform tag)
 - Search bar: real-time filter on title, slug, syntax
-- Tag filter chips: click to filter by tag
-- Command grid: cards with title, syntax, slug, tags, difficulty, "Done" badge
+- Tag filter chips: click to filter by category tag (platform tags excluded from chips)
+- Command grid: cards with title, syntax, slug, platform badge, tags, difficulty, "Done" badge
 
 ---
 
@@ -306,8 +320,8 @@ UPDATE public.profiles SET role = 'admin' WHERE email = 'user@example.com';
 - Full CRUD on `commands` table
 
 **UI Components:**
-- Left: form (all command fields + publish toggle)
-- Right: live asciinema preview, live video preview, commands list with action buttons
+- Left: form (all command fields + **platform dropdown** + publish toggle)
+- Right: live asciinema preview, live video preview, commands list with platform badges and action buttons
 
 ---
 
